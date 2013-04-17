@@ -225,25 +225,6 @@ int main(void)
     CommunicationInit();
   }
   
-  /*
-  //判断设备是否是初次上电, 如果'是', 重启一次, 确保以太网初始化正常
-  status = RCC_GetFlagStatus(RCC_FLAG_SFTRST);
-  RCC_ClearFlag(); 
-  if(!status)
-  {
-    GPIO_WriteBit(CANTX_LED,  Bit_RESET);
-    GPIO_WriteBit(CANRX_LED,  Bit_RESET);
-    GPIO_WriteBit(COMTX_LED,  Bit_RESET);
-    GPIO_WriteBit(COMRX_LED,  Bit_RESET);
-    GPIO_WriteBit(PWR_LED,  Bit_RESET);
-    GPIO_WriteBit(ALARM_LED,  Bit_RESET);
-    GPIO_WriteBit(RUNSTAT_LED,  Bit_SET);
-    
-    Delay(10);
-    
-    NVIC_SystemReset();
-  }
-  */
   
   printf(" ******* 输入'$'将触发串口控制台!*******\r\n\r\n");
   GPIO_WriteBit(CANTX_LED,  Bit_SET);
@@ -252,6 +233,7 @@ int main(void)
   GPIO_WriteBit(COMRX_LED,  Bit_SET); 
   
   
+  //启动完成, 进入常规流程
   uint8_t test = 0;
   while (1)
   {
