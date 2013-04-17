@@ -1,0 +1,473 @@
+<html>
+<body>
+<pre>
+<h1>礦ision Build Log</h1>
+<h2>Project:</h2>
+C:\Users\zhuhuajing\Desktop\测控ver1.2.2\BASE_test(V1.01I2C)_ver1.2.2\rvmdk\base_test.uvproj
+Project File Date:  03/06/2013
+
+<h2>Output:</h2>
+Build target 'base_test_flashmode'
+compiling core_cm3.c...
+assembling startup_stm32f10x_cl.s...
+compiling stm32f10x_wwdg.c...
+compiling misc.c...
+compiling stm32f10x_adc.c...
+compiling stm32f10x_bkp.c...
+compiling stm32f10x_can.c...
+compiling stm32f10x_crc.c...
+compiling stm32f10x_dbgmcu.c...
+compiling stm32f10x_dma.c...
+compiling stm32f10x_exti.c...
+compiling stm32f10x_flash.c...
+compiling stm32f10x_gpio.c...
+compiling stm32f10x_i2c.c...
+compiling stm32f10x_iwdg.c...
+compiling stm32f10x_pwr.c...
+compiling stm32f10x_rcc.c...
+compiling stm32f10x_rtc.c...
+compiling stm32f10x_spi.c...
+compiling stm32f10x_tim.c...
+compiling stm32f10x_usart.c...
+compiling main.c...
+..\user\Proj_Config.h(27): warning:  #1-D: last line of file ends without a newline
+..\user\Proj_Config.h:   #endif
+..\user\Proj_Config.h:         ^
+..\user\main.c(70): warning:  #223-D: function "Task_Pt103" declared implicitly
+..\user\main.c:                 Task_Pt103();
+..\user\main.c:                 ^
+..\user\main.c(105): warning:  #223-D: function "RTC_Configuration" declared implicitly
+..\user\main.c:    RTC_Configuration(); 
+..\user\main.c:    ^
+..\user\main.c(113): warning:  #223-D: function "TEMPMEA_Confitguration" declared implicitly
+..\user\main.c:   TEMPMEA_Confitguration();
+..\user\main.c:   ^
+..\user\main.c(125): warning:  #223-D: function "IWDG_Configuration" declared implicitly
+..\user\main.c:     IWDG_Configuration();
+..\user\main.c:     ^
+..\user\main.c(147): warning:  #223-D: function "lw103_client_init" declared implicitly
+..\user\main.c:                 lw103_client_init();
+..\user\main.c:                 ^
+..\user\main.c(82): warning:  #177-D: variable "GPIO_InitStructure" was declared but never referenced
+..\user\main.c:      GPIO_InitTypeDef GPIO_InitStructure;     
+..\user\main.c:                       ^
+..\user\main.c: ..\user\main.c: 7 warnings, 0 errors
+compiling stm32f10x_it.c...
+..\user\stm32f10x_it.c(228): warning:  #223-D: function "_USART1_IRQHandler" declared implicitly
+..\user\stm32f10x_it.c:      _USART1_IRQHandler();
+..\user\stm32f10x_it.c:      ^
+..\user\stm32f10x_it.c: ..\user\stm32f10x_it.c: 1 warning, 0 errors
+compiling system_stm32f10x.c...
+compiling Realtimedb.c...
+..\user\Proj_Config.h(27): warning:  #1-D: last line of file ends without a newline
+..\user\Proj_Config.h:   #endif
+..\user\Proj_Config.h:         ^
+..\user\Realtimedb.c(120): warning:  #223-D: function "memcpy" declared implicitly
+..\user\Realtimedb.c:                   memcpy(DevNameStr,SetCurrent.DevNameChar,16);
+..\user\Realtimedb.c:                   ^
+..\user\Realtimedb.c(130): warning:  #223-D: function "Get_ChipSerialNum" declared implicitly
+..\user\Realtimedb.c:           Get_ChipSerialNum();
+..\user\Realtimedb.c:           ^
+..\user\Realtimedb.c: ..\user\Realtimedb.c: 3 warnings, 0 errors
+compiling RTC_Time.c...
+..\user\RTC_Time.c(116): warning:  #1-D: last line of file ends without a newline
+..\user\RTC_Time.c:   }
+..\user\RTC_Time.c:    ^
+..\user\RTC_Time.c: ..\user\RTC_Time.c: 1 warning, 0 errors
+compiling pad_client.c...
+..\user\pad_client.c(83): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+..\user\pad_client.c:     introduction(hello);
+..\user\pad_client.c:                  ^
+..\user\pad_client.c(107): warning:  #513-D: a value of type "uint8_t *" cannot be assigned to an entity of type "char *"
+..\user\pad_client.c:           p=tx_buff;
+..\user\pad_client.c:            ^
+..\user\pad_client.c(166): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+..\user\pad_client.c:                   SetCurrent.Com1Para.Baud= atoi(byReadBuf+5);
+..\user\pad_client.c:                                                  ^
+..\user\pad_client.c(167): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+..\user\pad_client.c:                   p=strpbrk(byReadBuf+5,"-")+1;
+..\user\pad_client.c:                             ^
+..\user\pad_client.c(193): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *restrict"
+..\user\pad_client.c:                           sprintf(tx_buff,"it's OK");
+..\user\pad_client.c:                                   ^
+..\user\pad_client.c(194): warning:  #513-D: a value of type "uint8_t *" cannot be assigned to an entity of type "char *"
+..\user\pad_client.c:                     p=tx_buff+strlen("it's OK");
+..\user\pad_client.c:                      ^
+..\user\pad_client.c(198): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *restrict"
+..\user\pad_client.c:                      sprintf(tx_buff,"error");
+..\user\pad_client.c:                              ^
+..\user\pad_client.c(199): warning:  #513-D: a value of type "uint8_t *" cannot be assigned to an entity of type "char *"
+..\user\pad_client.c:                     p=tx_buff+strlen("error");
+..\user\pad_client.c:                      ^
+..\user\pad_client.c(202): warning:  #42-D: operand types are incompatible ("char *" and "uint8_t *")
+..\user\pad_client.c:   return(p-tx_buff);      
+..\user\pad_client.c:           ^
+..\user\pad_client.c(202): warning:  #993-D: subtraction of pointer types "char *" and "uint8_t *" is nonstandard
+..\user\pad_client.c:   return(p-tx_buff);      
+..\user\pad_client.c:           ^
+..\user\pad_client.c(242): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+..\user\pad_client.c:       charsum=Pad_process_rx_data(RxBuffer->bytes,Tx_Buf,RxBuffer->length);
+..\user\pad_client.c:                                   ^
+..\user\pad_client.c(242): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+..\user\pad_client.c:       charsum=Pad_process_rx_data(RxBuffer->bytes,Tx_Buf,RxBuffer->length);
+..\user\pad_client.c:                                                   ^
+..\user\pad_client.c(274): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *restrict"
+..\user\pad_client.c:           sprintf(tx_buff,"@ip:%d.%d.%d.%d:%s:%d.%d:%d-%d-%d:%dkVA:^_^:^o^:(=_=)",DevIPAddressTab[0],DevIPAddressTab[1],DevIPAddressTab[2],\
+..\user\pad_client.c:                   ^
+..\user\pad_client.c(275): warning:  #181-D: argument is incompatible with corresponding format string conversion
+..\user\pad_client.c:                           DevIPAddressTab[3],SetCurrent.DevNameChar,SetCurrent.vers/10,SetCurrent.vers%10,ver_tm.tm_year,ver_tm.tm_mon,\
+..\user\pad_client.c:                                              ^
+..\user\pad_client.c(290): warning:  #1-D: last line of file ends without a newline
+..\user\pad_client.c:   /******************* sac_wpa900 风电工程部 *****la fin de documant****/
+..\user\pad_client.c:                                                                          ^
+..\user\pad_client.c: ..\user\pad_client.c: 15 warnings, 0 errors
+compiling soe.c...
+..\user\Proj_Config.h(27): warning:  #1-D: last line of file ends without a newline
+..\user\Proj_Config.h:   #endif
+..\user\Proj_Config.h:         ^
+..\user\soe.c(43): warning:  #223-D: function "Get_Msec" declared implicitly
+..\user\soe.c:          temp_soe.mscd=Get_Msec();
+..\user\soe.c:                        ^
+..\user\soe.c(70): warning:  #223-D: function "Term_soe_trig" declared implicitly
+..\user\soe.c:                  Term_soe_trig(trig);    
+..\user\soe.c:                  ^
+..\user\soe.c(79): warning:  #223-D: function "P103_soe_trig" declared implicitly
+..\user\soe.c:                  P103_soe_trig(trig);    
+..\user\soe.c:                  ^
+..\user\soe.c(93): warning:  #223-D: function "Get_Msec" declared implicitly
+..\user\soe.c:          temp_soe.mscd=Get_Msec();
+..\user\soe.c:                        ^
+..\user\soe.c(103): warning:  #223-D: function "telprintf" declared implicitly
+..\user\soe.c:                                  telprintf("I2C1出错，SR1=%08x SR2=%08x CR1=%08x CR2=%08x\r\n",\
+..\user\soe.c:                                  ^
+..\user\soe.c(115): warning:  #177-D: variable "inst_seq" was declared but never referenced
+..\user\soe.c:          static u8 inst_seq;
+..\user\soe.c:                    ^
+..\user\soe.c: ..\user\soe.c: 7 warnings, 0 errors
+compiling com_manager.c...
+..\user\com_manager.c(53): warning:  #1-D: last line of file ends without a newline
+..\user\com_manager.c:   }
+..\user\com_manager.c:    ^
+..\user\com_manager.c: ..\user\com_manager.c: 1 warning, 0 errors
+compiling lwp103client.c...
+..\user\103com_func.h(17): warning:  #1-D: last line of file ends without a newline
+..\user\103com_func.h:   #endif
+..\user\103com_func.h:         ^
+..\user\lwp103client.c(155): warning:  #223-D: function "telprintf" declared implicitly
+..\user\lwp103client.c:     telprintf("udp sent timetamp as:%4d-%02d-%02d %02d:%02d:%02d\r\n",t.tm_year,t.tm_mon+1,t.tm_mday,t.tm_hour,t.tm_min,t.tm_sec);
+..\user\lwp103client.c:     ^
+..\user\lwp103client.c(212): warning:  #223-D: function "telprintf" declared implicitly
+..\user\lwp103client.c:                 telprintf( "udp detected from eyewin：%d.%d.%d.%d\n\r", \
+..\user\lwp103client.c:                 ^
+..\user\lwp103client.c(230): warning:  #223-D: function "telprintf" declared implicitly
+..\user\lwp103client.c:     telprintf("103 protocol client linkup PCB_Pointer=0X%X\n\r",TcpPCB);
+..\user\lwp103client.c:     ^
+..\user\lwp103client.c(252): warning:  #223-D: function "ANSWER_ASDU21" declared implicitly
+..\user\lwp103client.c:                         checksum=ANSWER_ASDU21(ReadBuf,WriteBuf);
+..\user\lwp103client.c:                                  ^
+..\user\lwp103client.c(322): warning:  #223-D: function "telprintf" declared implicitly
+..\user\lwp103client.c:         telprintf("103 Protocol disconnect! 囧rz\r\n");
+..\user\lwp103client.c:         ^
+..\user\lwp103client.c(581): warning:  #223-D: function "Modbus_Meas_Prescale" declared implicitly
+..\user\lwp103client.c:                         value=Modbus_Meas_Prescale(CAN_MeasureTab[i-1],MeaPropTab[23+i].scale); 
+..\user\lwp103client.c:                               ^
+..\user\lwp103client.c(603): warning:  #1-D: last line of file ends without a newline
+..\user\lwp103client.c:   /******************* sac_wpa900 风电工程部 *****la fin de document****/
+..\user\lwp103client.c:                                                                          ^
+..\user\lwp103client.c: ..\user\lwp103client.c: 8 warnings, 0 errors
+compiling 103com_func.c...
+..\user\103com_func.h(17): warning:  #1-D: last line of file ends without a newline
+..\user\103com_func.h:   #endif
+..\user\103com_func.h:         ^
+..\user\103com_func.c(189): warning:  #940-D: missing return statement at end of non-void function "ANSWER_ASDU10"
+..\user\103com_func.c:   }
+..\user\103com_func.c:   ^
+..\user\103com_func.c(190): warning:  #1-D: last line of file ends without a newline
+..\user\103com_func.c:          
+..\user\103com_func.c:          ^
+..\user\103com_func.c: ..\user\103com_func.c: 3 warnings, 0 errors
+compiling bsp.c...
+..\user\Proj_Config.h(27): warning:  #1-D: last line of file ends without a newline
+..\user\Proj_Config.h:   #endif
+..\user\Proj_Config.h:         ^
+..\BSP\bsp.c(236): warning:  #177-D: variable "I2CDMA_InitStructure" was declared but never referenced
+..\BSP\bsp.c:           DMA_InitTypeDef  I2CDMA_InitStructure;
+..\BSP\bsp.c:                            ^
+..\BSP\bsp.c(887): warning:  #223-D: function "lw103_client_init" declared implicitly
+..\BSP\bsp.c:             lw103_client_init();
+..\BSP\bsp.c:             ^
+..\BSP\bsp.c(957): warning:  #69-D: integer conversion resulted in truncation
+..\BSP\bsp.c:     Timeout=0x1ff;
+..\BSP\bsp.c:             ^
+..\BSP\bsp.c(943): warning:  #177-D: variable "i" was declared but never referenced
+..\BSP\bsp.c:     uint8_t i;
+..\BSP\bsp.c:             ^
+..\BSP\bsp.c(1029): warning:  #260-D: explicit type is missing ("int" assumed)
+..\BSP\bsp.c:     static RxCounter;
+..\BSP\bsp.c:            ^
+..\BSP\bsp.c: ..\BSP\bsp.c: 6 warnings, 0 errors
+compiling BaseBus_Protocol.c...
+..\BSP\BaseBus_Protocol.c(305): warning:  #550-D: parameter "Sem" was set but never used
+..\BSP\BaseBus_Protocol.c:   void BinSemPost(uint8_t Sem)
+..\BSP\BaseBus_Protocol.c:                           ^
+..\BSP\BaseBus_Protocol.c(64): warning:  #177-D: variable "MeaRecording" was declared but never referenced
+..\BSP\BaseBus_Protocol.c:   static float MeaRecording[MEANUM];
+..\BSP\BaseBus_Protocol.c:                ^
+..\BSP\BaseBus_Protocol.c: ..\BSP\BaseBus_Protocol.c: 2 warnings, 0 errors
+compiling netconf.c...
+..\user\netconf.c(51): warning:  #177-D: variable "IPaddress" was declared but never referenced
+..\user\netconf.c:   static uint32_t IPaddress = 0;
+..\user\netconf.c:                   ^
+..\user\netconf.c: ..\user\netconf.c: 1 warning, 0 errors
+compiling CanBus.c...
+..\BSP\CanBus.c(162): warning:  #1-D: last line of file ends without a newline
+..\BSP\CanBus.c:                                
+..\BSP\CanBus.c:                                ^
+..\BSP\CanBus.c: ..\BSP\CanBus.c: 1 warning, 0 errors
+compiling shellcmd.c...
+..\BSP\shellcmd.c(308): warning:  #1293-D: assignment in condition
+..\BSP\shellcmd.c:         while((p=strpbrk(entry," "))&&(i<len)) ;
+..\BSP\shellcmd.c:               ^
+..\BSP\shellcmd.c(397): warning:  #223-D: function "Time_Calib" declared implicitly
+..\BSP\shellcmd.c:                Time_Calib();
+..\BSP\shellcmd.c:                ^
+..\BSP\shellcmd.c(642): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+..\BSP\shellcmd.c:                         p=p+strlen("输入4～20mA通道序号查看电流显示\r\n")+strlen(DevNameStr);
+..\BSP\shellcmd.c:                                                                                  ^
+..\BSP\shellcmd.c(674): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+..\BSP\shellcmd.c:                      p=p+strlen("当前装置名称为,请输入新名称\r\n")+strlen(DevNameStr);
+..\BSP\shellcmd.c:                                                                           ^
+..\BSP\shellcmd.c(455): warning:  #177-D: variable "j" was declared but never referenced
+..\BSP\shellcmd.c:      uint8_t i,j;
+..\BSP\shellcmd.c:                ^
+..\BSP\shellcmd.c(457): warning:  #177-D: variable "k" was declared but never referenced
+..\BSP\shellcmd.c:      u16 k;
+..\BSP\shellcmd.c:          ^
+..\BSP\shellcmd.c(460): warning:  #550-D: variable "MeaRecordTab" was set but never used
+..\BSP\shellcmd.c:      static float MeaRecordTab[MEANUM];
+..\BSP\shellcmd.c:                   ^
+..\BSP\shellcmd.c(798): warning:  #111-D: statement is unreachable
+..\BSP\shellcmd.c:          break;
+..\BSP\shellcmd.c:          ^
+..\BSP\shellcmd.c(819): warning:  #111-D: statement is unreachable
+..\BSP\shellcmd.c:              break;
+..\BSP\shellcmd.c:              ^
+..\BSP\shellcmd.c(878): warning:  #111-D: statement is unreachable
+..\BSP\shellcmd.c:         break; 
+..\BSP\shellcmd.c:         ^
+..\BSP\shellcmd.c(900): warning:  #111-D: statement is unreachable
+..\BSP\shellcmd.c:              break;
+..\BSP\shellcmd.c:              ^
+..\BSP\shellcmd.c(905): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+..\BSP\shellcmd.c:        memcpy(setaddr->DevNameChar,DevNameStr,strlen(DevNameStr));
+..\BSP\shellcmd.c:                                                      ^
+..\BSP\shellcmd.c(935): warning:  #111-D: statement is unreachable
+..\BSP\shellcmd.c:       break;
+..\BSP\shellcmd.c:       ^
+..\BSP\shellcmd.c(938): warning:  #111-D: statement is unreachable
+..\BSP\shellcmd.c:             break;
+..\BSP\shellcmd.c:             ^
+..\BSP\shellcmd.c(1077): warning:  #940-D: missing return statement at end of non-void function "CmdRestart"
+..\BSP\shellcmd.c:   }
+..\BSP\shellcmd.c:   ^
+..\BSP\shellcmd.c: ..\BSP\shellcmd.c: 15 warnings, 0 errors
+compiling tcp_modbus.c...
+..\BSP\tcp_modbus.c(7): warning:  #9-D: nested comment is not allowed
+..\BSP\tcp_modbus.c:   /* Includes ------------------------------------------------------------------*/
+..\BSP\tcp_modbus.c:   ^
+..\user\Proj_Config.h(27): warning:  #1-D: last line of file ends without a newline
+..\user\Proj_Config.h:   #endif
+..\user\Proj_Config.h:         ^
+..\BSP\tcp_modbus.c(93): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+..\BSP\tcp_modbus.c:         charsum=process_rx_data(&(RxBuffer->bytes[6]),Tx_Buf,RxBuffer->length);
+..\BSP\tcp_modbus.c:                                 ^
+..\BSP\tcp_modbus.c(93): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+..\BSP\tcp_modbus.c:         charsum=process_rx_data(&(RxBuffer->bytes[6]),Tx_Buf,RxBuffer->length);
+..\BSP\tcp_modbus.c:                                                       ^
+..\BSP\tcp_modbus.c(241): warning:  #223-D: function "telprintf" declared implicitly
+..\BSP\tcp_modbus.c:     telprintf("udp sent timetamp as:%4d-%02d-%02d %02d:%02d:%02d\r\n",t.tm_year,t.tm_mon,t.tm_mday,t.tm_hour,t.tm_min,t.tm_sec);
+..\BSP\tcp_modbus.c:     ^
+..\BSP\tcp_modbus.c(39): warning:  #550-D: variable "MODBUS_TcpPCB" was set but never used
+..\BSP\tcp_modbus.c:   static struct tcp_pcb *MODBUS_TcpPCB;
+..\BSP\tcp_modbus.c:                          ^
+..\BSP\tcp_modbus.c: ..\BSP\tcp_modbus.c: 6 warnings, 0 errors
+compiling modbus.c...
+compiling I2CRoutines.c...
+..\BSP\I2CRoutines.c(5): warning:  #9-D: nested comment is not allowed
+..\BSP\I2CRoutines.c:   /* Includes ------------------------------------------------------------------*/
+..\BSP\I2CRoutines.c:   ^
+..\BSP\I2CRoutines.c: ..\BSP\I2CRoutines.c: 1 warning, 0 errors
+compiling stm32_eth.c...
+compiling etharp.c...
+compiling loopif.c...
+compiling slipif.c...
+compiling dhcp.c...
+compiling dns.c...
+compiling init.c...
+compiling mem.c...
+..\lwip-1.3.1\src\core\mem.c(184): warning:  #550-D: variable "mem_sem" was set but never used
+..\lwip-1.3.1\src\core\mem.c:   static sys_sem_t mem_sem;
+..\lwip-1.3.1\src\core\mem.c:                    ^
+..\lwip-1.3.1\src\core\mem.c: ..\lwip-1.3.1\src\core\mem.c: 1 warning, 0 errors
+compiling memp.c...
+compiling netif.c...
+compiling pbuf.c...
+compiling raw.c...
+compiling stats.c...
+compiling sys.c...
+compiling tcp.c...
+compiling tcp_in.c...
+compiling tcp_out.c...
+..\lwip-1.3.1\src\core\tcp_out.c(459): warning:  #550-D: variable "tcphdr" was set but never used
+..\lwip-1.3.1\src\core\tcp_out.c:     struct tcp_hdr *tcphdr;
+..\lwip-1.3.1\src\core\tcp_out.c:                     ^
+..\lwip-1.3.1\src\core\tcp_out.c(872): warning:  #550-D: variable "tcphdr" was set but never used
+..\lwip-1.3.1\src\core\tcp_out.c:     struct tcp_hdr *tcphdr;
+..\lwip-1.3.1\src\core\tcp_out.c:                     ^
+..\lwip-1.3.1\src\core\tcp_out.c(926): warning:  #550-D: variable "tcphdr" was set but never used
+..\lwip-1.3.1\src\core\tcp_out.c:     struct tcp_hdr *tcphdr;
+..\lwip-1.3.1\src\core\tcp_out.c:                     ^
+..\lwip-1.3.1\src\core\tcp_out.c: ..\lwip-1.3.1\src\core\tcp_out.c: 3 warnings, 0 errors
+compiling udp.c...
+compiling autoip.c...
+compiling icmp.c...
+compiling igmp.c...
+compiling inet.c...
+compiling inet_chksum.c...
+compiling ip.c...
+compiling ip_addr.c...
+compiling ip_frag.c...
+compiling asn1_dec.c...
+compiling asn1_enc.c...
+compiling mib2.c...
+compiling mib_structs.c...
+compiling msg_in.c...
+compiling msg_out.c...
+compiling api_lib.c...
+compiling api_msg.c...
+compiling err.c...
+compiling netbuf.c...
+compiling netdb.c...
+compiling netifapi.c...
+compiling sockets.c...
+compiling tcpip.c...
+compiling helloworld.c...
+..\lwip-1.3.1\port\helloworld.c(315): warning:  #174-D: expression has no effect
+..\lwip-1.3.1\port\helloworld.c:   for(i=0;i++;i<cnt)
+..\lwip-1.3.1\port\helloworld.c:               ^
+..\lwip-1.3.1\port\helloworld.c: ..\lwip-1.3.1\port\helloworld.c: 1 warning, 0 errors
+compiling ethernetif.c...
+compiling server.c...
+..\lwip-1.3.1\port\server.c(168): warning:  #550-D: variable "data" was set but never used
+..\lwip-1.3.1\port\server.c:     char data;
+..\lwip-1.3.1\port\server.c:          ^
+..\lwip-1.3.1\port\server.c: ..\lwip-1.3.1\port\server.c: 1 warning, 0 errors
+compiling client.c...
+..\lwip-1.3.1\port\client.c(39): warning:  #550-D: variable "TcpPCB" was set but never used
+..\lwip-1.3.1\port\client.c:   static struct tcp_pcb *TcpPCB;
+..\lwip-1.3.1\port\client.c:                          ^
+..\lwip-1.3.1\port\client.c: ..\lwip-1.3.1\port\client.c: 1 warning, 0 errors
+linking...
+Program Size: Code=84740 RO-data=4572 RW-data=2028 ZI-data=55052  
+FromELF: creating hex file...
+".\out\base_test.axf" - 0 Error(s), 85 Warning(s).
+Load "C:\\Users\\zhuhuajing\\Desktop\\测控ver1.2.2\\BASE_test(V1.01I2C)_ver1.2.2\\rvmdk\\out\\base_test.AXF" 
+Set JLink Project File to "C:\Users\zhuhuajing\Desktop\测控ver1.2.2\BASE_test(V1.01I2C)_ver1.2.2\rvmdk\JLinkSettings.ini"
+ 
+JLink info:
+------------
+DLL: V4.15n, compiled Jun 18 2010 19:55:09
+Firmware: J-Link ARM V8 compiled Aug 24 2011 17:23:32
+Hardware: V8.00
+S/N : 20090626 
+Feature(s) : RDI,FlashDL,FlashBP,JFlash,GDBFull 
+ 
+**JLink Warning: RESET (pin 15) high, but should be low. Please check target hardware.
+**JLink Warning: No matching core found.
+***JLink Error: Supply voltage too low (1 Volt is required, Measured: 0.1 Volt).
+Please check target power.
+Load "C:\\Users\\zhuhuajing\\Desktop\\测控ver1.2.2\\BASE_test(V1.01I2C)_ver1.2.2\\rvmdk\\out\\base_test.AXF" 
+Set JLink Project File to "C:\Users\zhuhuajing\Desktop\测控ver1.2.2\BASE_test(V1.01I2C)_ver1.2.2\rvmdk\JLinkSettings.ini"
+ 
+JLink info:
+------------
+DLL: V4.15n, compiled Jun 18 2010 19:55:09
+Firmware: J-Link ARM V8 compiled Aug 24 2011 17:23:32
+Hardware: V8.00
+S/N : 20090626 
+Feature(s) : RDI,FlashDL,FlashBP,JFlash,GDBFull 
+ 
+**JLink Warning: RESET (pin 15) high, but should be low. Please check target hardware.
+**JLink Warning: No matching core found.
+***JLink Error: Supply voltage too low (1 Volt is required, Measured: 0.1 Volt).
+Please check target power.
+Load "C:\\Users\\zhuhuajing\\Desktop\\测控ver1.2.2\\BASE_test(V1.01I2C)_ver1.2.2\\rvmdk\\out\\base_test.AXF" 
+Set JLink Project File to "C:\Users\zhuhuajing\Desktop\测控ver1.2.2\BASE_test(V1.01I2C)_ver1.2.2\rvmdk\JLinkSettings.ini"
+ 
+JLink info:
+------------
+DLL: V4.15n, compiled Jun 18 2010 19:55:09
+Firmware: J-Link ARM V8 compiled Aug 24 2011 17:23:32
+Hardware: V8.00
+S/N : 20090626 
+Feature(s) : RDI,FlashDL,FlashBP,JFlash,GDBFull 
+ 
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: TPIU fitted.
+* JLink Info: ETM fitted.
+* JLink Info:   FPUnit: 6 code (BP) slots and 2 literal slots
+ROMTableAddr = 0xE00FF003
+ 
+Target info:
+------------
+Device: STM32F107VC
+VTarget = 3.325V
+State of Pins: 
+TCK: 0, TDI: 0, TDO: 1, TMS: 0, TRES: 1, TRST: 1
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: TPIU fitted.
+* JLink Info: ETM fitted.
+* JLink Info:   FPUnit: 6 code (BP) slots and 2 literal slots
+Hardware-Breakpoints: 6
+Software-Breakpoints: 2048
+Watchpoints:          4
+JTAG speed: 4000 kHz
+ 
+Erase Done.
+Programming Done.
+Verify OK.
+Load "C:\\Users\\zhuhuajing\\Desktop\\测控ver1.2.2\\BASE_test(V1.01I2C)_ver1.2.2\\rvmdk\\out\\base_test.AXF" 
+Set JLink Project File to "C:\Users\zhuhuajing\Desktop\测控ver1.2.2\BASE_test(V1.01I2C)_ver1.2.2\rvmdk\JLinkSettings.ini"
+ 
+JLink info:
+------------
+DLL: V4.15n, compiled Jun 18 2010 19:55:09
+Firmware: J-Link ARM V8 compiled Aug 24 2011 17:23:32
+Hardware: V8.00
+S/N : 20090626 
+Feature(s) : RDI,FlashDL,FlashBP,JFlash,GDBFull 
+ 
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: TPIU fitted.
+* JLink Info: ETM fitted.
+* JLink Info:   FPUnit: 6 code (BP) slots and 2 literal slots
+ROMTableAddr = 0xE00FF003
+ 
+Target info:
+------------
+Device: STM32F107VC
+VTarget = 3.325V
+State of Pins: 
+TCK: 0, TDI: 0, TDO: 1, TMS: 0, TRES: 1, TRST: 1
+* JLink Info: Found SWD-DP with ID 0x1BA01477
+* JLink Info: TPIU fitted.
+* JLink Info: ETM fitted.
+* JLink Info:   FPUnit: 6 code (BP) slots and 2 literal slots
+Hardware-Breakpoints: 6
+Software-Breakpoints: 2048
+Watchpoints:          4
+JTAG speed: 4000 kHz
+ 
+Erase Done.
+Programming Done.
+Verify OK.

@@ -1,0 +1,17 @@
+.\out\telnet.o: ..\lwip-1.3.1\port\telnet.c
+.\out\telnet.o: ..\lwip-1.3.1\port\telnet.h
+.\out\telnet.o: ..\lwip-1.3.1\src\include\lwip/tcp.h
+.\out\telnet.o: ..\lwip-1.3.1\src\include\lwip/opt.h
+.\out\telnet.o: ..\lwip-1.3.1\port\lwipopts.h
+.\out\telnet.o: ..\lwip-1.3.1\src\include\lwip/debug.h
+.\out\telnet.o: ..\lwip-1.3.1\src\include\lwip/arch.h
+.\out\telnet.o: ..\lwip-1.3.1\port\arch/cc.h
+.\out\telnet.o: ..\lwip-1.3.1\port\arch/cpu.h
+.\out\telnet.o: ..\lwip-1.3.1\src\include\lwip/sys.h
+.\out\telnet.o: ..\lwip-1.3.1\src\include\lwip/mem.h
+.\out\telnet.o: ..\lwip-1.3.1\src\include\lwip/pbuf.h
+.\out\telnet.o: ..\lwip-1.3.1\src\include\lwip/err.h
+.\out\telnet.o: ..\lwip-1.3.1\src\include\ipv4\lwip/ip.h
+.\out\telnet.o: ..\lwip-1.3.1\src\include\lwip/def.h
+.\out\telnet.o: ..\lwip-1.3.1\src\include\ipv4\lwip/ip_addr.h
+.\out\telnet.o: ..\lwip-1.3.1\src\include\ipv4\lwip/inet.h

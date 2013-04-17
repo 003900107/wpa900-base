@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<Workspace>
+  <ConfigDictionary>
+    
+  <CurrentConfigs><Project>Base_test/Debug</Project></CurrentConfigs></ConfigDictionary>
+  <Desktop>
+    <Static>
+      <Workspace>
+        <ColumnWidths>
+          
+          
+          
+          
+        <Column0>262</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
+      </Workspace>
+    <Build><ColumnWidth0>20</ColumnWidth0><ColumnWidth1>915</ColumnWidth1><ColumnWidth2>244</ColumnWidth2><ColumnWidth3>61</ColumnWidth3></Build></Static>
+    <Windows>
+      
+    <Wnd0>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-12839-29525</Identity>
+            <TabName>Workspace</TabName>
+            <Factory>Workspace</Factory>
+            <Session>
+              
+            <NodeDict><ExpandedNode>Base_test</ExpandedNode><ExpandedNode>Base_test/Output</ExpandedNode></NodeDict></Session>
+          </Tab>
+        </Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd0><Wnd1><Tabs><Tab><Identity>TabID-2112-31363</Identity><TabName>Build</TabName><Factory>Build</Factory><Session/></Tab></Tabs><SelectedTab>0</SelectedTab></Wnd1></Windows>
+    <Editor>
+      
+      
+      
+      
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\CMSIS\core_cm3.c</Filename><XPos>0</XPos><YPos>241</YPos><SelStart>897</SelStart><SelEnd>897</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\CMSIS\startup_stm32f10x_cl.s</Filename><XPos>0</XPos><YPos>12</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\startup_stm32f10x_cl.s</Filename><XPos>0</XPos><YPos>138</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\efsl\include\interface.h</Filename><XPos>0</XPos><YPos>21</YPos><SelStart>2782</SelStart><SelEnd>2782</SelEnd></Tab><ActiveTab>3</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\user\system_stm32f10x.c</Filename><XPos>0</XPos><YPos>18</YPos><SelStart>1176</SelStart><SelEnd>1176</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\CMSIS\core_cm3.h</Filename><XPos>0</XPos><YPos>1709</YPos><SelStart>80812</SelStart><SelEnd>80812</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\user\main.c</Filename><XPos>0</XPos><YPos>85</YPos><SelStart>3138</SelStart><SelEnd>3138</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\BSP\adc_calc.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>3338</SelStart><SelEnd>3338</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\BSP\I2CRoutines.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>1028</SelStart><SelEnd>1028</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\lwip-1.3.1\port\arch\junk\sys_arch.c</Filename><XPos>0</XPos><YPos>31</YPos><SelStart>1906</SelStart><SelEnd>1906</SelEnd></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Positions>
+      
+      
+      
+      
+      
+    <Top><Row0><Sizes><Toolbar-00a9b678><key>iaridepm.enu1</key></Toolbar-00a9b678></Sizes></Row0></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>511</Bottom><Right>336</Right><x>-2</x><y>-2</y><xscreen>200</xscreen><yscreen>200</yscreen><sizeHorzCX>156250</sizeHorzCX><sizeHorzCY>265252</sizeHorzCY><sizeVertCX>264063</sizeVertCX><sizeVertCY>680371</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>198</Bottom><Right>1282</Right><x>-2</x><y>-2</y><xscreen>1284</xscreen><yscreen>200</yscreen><sizeHorzCX>1003125</sizeHorzCX><sizeHorzCY>265252</sizeHorzCY><sizeVertCX>156250</sizeVertCX><sizeVertCY>265252</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+  </Desktop>
+</Workspace>
+
+

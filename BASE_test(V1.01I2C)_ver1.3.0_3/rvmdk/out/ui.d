@@ -1,0 +1,10 @@
+.\out\ui.o: ..\efsl\source\ui.c
+.\out\ui.o: ..\efsl\include\ui.h
+.\out\ui.o: ..\efsl\include\fs.h
+.\out\ui.o: ..\efsl\include\config.h
+.\out\ui.o: ..\efsl\include\error.h
+.\out\ui.o: ..\efsl\include\config.h
+.\out\ui.o: ..\efsl\include\interface.h
+.\out\ui.o: ..\efsl\include\types.h
+.\out\ui.o: ..\efsl\include\config.h
+.\out\ui.o: ..\efsl\include\config.h

@@ -1,0 +1,13 @@
+.\out\inet_chksum.o: ..\lwip-1.3.1\src\core\ipv4\inet_chksum.c
+.\out\inet_chksum.o: ..\lwip-1.3.1\src\include\lwip/opt.h
+.\out\inet_chksum.o: ..\lwip-1.3.1\port\lwipopts.h
+.\out\inet_chksum.o: ..\lwip-1.3.1\src\include\lwip/debug.h
+.\out\inet_chksum.o: ..\lwip-1.3.1\src\include\lwip/arch.h
+.\out\inet_chksum.o: ..\lwip-1.3.1\port\arch/cc.h
+.\out\inet_chksum.o: ..\lwip-1.3.1\port\arch/cpu.h
+.\out\inet_chksum.o: ..\lwip-1.3.1\src\include\ipv4\lwip/inet_chksum.h
+.\out\inet_chksum.o: ..\lwip-1.3.1\src\include\lwip/pbuf.h
+.\out\inet_chksum.o: ..\lwip-1.3.1\src\include\lwip/err.h
+.\out\inet_chksum.o: ..\lwip-1.3.1\src\include\ipv4\lwip/ip_addr.h
+.\out\inet_chksum.o: ..\lwip-1.3.1\src\include\ipv4\lwip/inet.h
+.\out\inet_chksum.o: C:\Keil\ARM\RV31\INC\stddef.h

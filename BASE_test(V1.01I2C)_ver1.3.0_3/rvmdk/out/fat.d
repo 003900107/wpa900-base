@@ -1,0 +1,9 @@
+.\out\fat.o: ..\efsl\source\fat.c
+.\out\fat.o: ..\efsl\include\fs.h
+.\out\fat.o: ..\efsl\include\config.h
+.\out\fat.o: ..\efsl\include\error.h
+.\out\fat.o: ..\efsl\include\config.h
+.\out\fat.o: ..\efsl\include\interface.h
+.\out\fat.o: ..\efsl\include\types.h
+.\out\fat.o: ..\efsl\include\config.h
+.\out\fat.o: ..\efsl\include\config.h

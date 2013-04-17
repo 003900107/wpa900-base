@@ -1,0 +1,10 @@
+.\out\mkfs.o: ..\efsl\source\mkfs.c
+.\out\mkfs.o: ..\efsl\include\mkfs.h
+.\out\mkfs.o: ..\efsl\include\partition.h
+.\out\mkfs.o: ..\efsl\include\config.h
+.\out\mkfs.o: ..\efsl\include\error.h
+.\out\mkfs.o: ..\efsl\include\config.h
+.\out\mkfs.o: ..\efsl\include\interface.h
+.\out\mkfs.o: ..\efsl\include\types.h
+.\out\mkfs.o: ..\efsl\include\config.h
+.\out\mkfs.o: ..\efsl\include\config.h

@@ -1,0 +1,268 @@
+#if I2C_METHOD==INTERRUPT
+
+uint8_t i2c_buffer_write(void)
+{	 
+	Direction = Transmitter;
+    I2C_Cmd(I2C1,ENABLE); 
+	I2C_AcknowledgeConfig(I2C1, ENABLE);
+    I2C_ITConfig(I2C1, I2C_IT_EVT | I2C_IT_BUF, ENABLE);
+        /* Send START condition */
+		if(BinSemPend(I2C_BUSYNOW_FLAG))
+		{
+			I2C_GenerateSTART(I2C1, ENABLE);
+		}
+	return 1;
+}
+
+uint8_t i2c_buffer_read(void)
+{
+    Direction=Receiver;
+	I2C_Cmd(I2C1,ENABLE);
+	I2C_AcknowledgeConfig(I2C1, ENABLE);
+    I2C_ITConfig(I2C1, I2C_IT_EVT | I2C_IT_BUF, ENABLE);
+	if(BinSemPend(I2C_BUSYNOW_FLAG))
+    {	
+		I2C_GenerateSTART(I2C1, ENABLE);
+	}
+	return 1;
+}
+
+
+void _I2C1_EV_IRQHandler(void)
+{	
+	 static u8 i; 
+    switch (EV_Word=I2C_GetLastEvent(I2C1))
+    {
+     	  case I2C_EVENT_MASTER_MODE_SELECT:        /* EV5 */
+		       if (Direction == Receiver)
+              {
+                  /* Send slave Address for read */
+                  I2C_Send7bitAddress(I2C1, SlaveAddr, I2C_Direction_Receiver);      
+              }
+              else
+              {
+                  /* Send slave Address for write */
+                  I2C_Send7bitAddress(I2C1,SlaveAddr, I2C_Direction_Transmitter);
+				 // printf("主发送\r\n");
+              }
+      
+              break;
+              /* Master Receiver events */
+          case I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED:  /* EV6 */
+               //主接收模式EV6不做任何响应
+			   I2C_ReadRegister(I2C1,I2C_Register_SR1 ); 
+			   I2C_ReadRegister(I2C1,I2C_Register_SR2 ); 
+              break;
+      	  case 0x00030044:	//接收时未读取数据会产生BTF位
+          case I2C_EVENT_MASTER_BYTE_RECEIVED:    /* EV7 */
+              /* Store I2C1 received data */
+			  RxBuffer[Rx_Idx++] = I2C_ReceiveData (I2C1);      
+              /* Disable ACK and send I2C1 STOP condition before receiving the last data */
+              if (Rx_Idx == BufferSize-1)
+              {
+                  /* Disable I2C1 acknowledgement to tell ai no more querry now   yuanbo*/
+                  I2C_AcknowledgeConfig(I2C1, DISABLE);	  //倒数第二个字节关闭ack
+                  /* Send I2C1 STOP Condition */
+                  I2C_GenerateSTOP(I2C1, ENABLE); 
+				 // printf("接收完毕\r\n");     
+              }
+      
+              if (Rx_Idx == BufferSize)
+              {                  
+                MasterReceptionComplete = 0x01; 
+				 
+				Rx_Idx=0;
+				I2C_ITConfig(I2C1, I2C_IT_EVT, DISABLE);
+				//Deal_Comming();
+				//I2C_Cmd(I2C1,DISABLE);    
+              }
+              break;
+      
+      
+      
+              /* Master Transmitter events */
+          case I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED:     /* EV8 just after EV6 */
+              I2C_SendData(I2C1, TxBuffer[Tx_Idx++]);
+              break;
+      
+          case I2C_EVENT_MASTER_BYTE_TRANSMITTING:       /* EV8 */
+              if (Tx_Idx < BufferSize)
+              {
+                  I2C_SendData(I2C1, TxBuffer[Tx_Idx++]);      
+              }
+              /* Disable the I2C_IT_BUF interrupt after sending the last buffer data 
+              (last EV8) to no allow a new interrupt with TxE and only BTF could generate it */
+              else  
+			  {
+			  I2C_ITConfig(I2C1, I2C_IT_BUF, DISABLE);    
+			  }  
+              break;
+      
+          case I2C_EVENT_MASTER_BYTE_TRANSMITTED:       /* EV8-2 */
+  //              I2C_ITConfig(I2C1, I2C_IT_BUF, ENABLE);
+//              Direction = Receiver;  /* Change data direction */
+//              I2C_GenerateSTART(I2C1, ENABLE); /* Re-Start */  
+                I2C_GenerateSTOP(I2C1, ENABLE);  
+				Tx_Idx=0;  
+				I2C_ITConfig(I2C1, I2C_IT_EVT, DISABLE);  
+				BinSemPost(I2C_BUSYNOW_FLAG);
+				//I2C_Cmd(I2C1,DISABLE);
+              break;
+      
+          default:
+		  EV[i++]=EV_Word;
+		     // I2C_DeInit(I2C1);
+ //  	I2C_Init(I2C1,&I2C_InitStruct);
+//	I2C_ITConfig(I2C1, I2C_IT_EVT|I2C_IT_BUF|I2C_IT_ERR, ENABLE);
+			 // I2C_Cmd(I2C1, ENABLE);
+			  
+              break;
+          }
+      
+//printf("%08x\r\n",EV_Word);	 //不可在i2c中断中放耗时操作
+
+}
+
+#endif
+#if I2C_METHOD==POLLING
+uint8_t i2c_buffer_write(void)
+{
+	uint8_t i,*pBuffer;
+	uint16_t torlerance;
+	pBuffer=TxBuffer;
+
+	if(BinSemPend(I2C_BUSYNOW_FLAG))
+	{// Start the I2C
+			I2C_GenerateSTART(I2C1,ENABLE);
+		
+		      //not recommanded, stupid way
+		    torlerance=I2C_PollingWait;    
+			while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT))
+			{
+			//	 if (torlerance-- == 0)
+		    // return 0;	
+			}
+			torlerance=I2C_PollingWait;
+			I2C_Send7bitAddress(I2C1,SlaveAddr,I2C_Direction_Transmitter);
+			 while ((I2C1->SR1&0x0002) != 0x0002)
+	        {
+	        //    if (torlerance-- == 0)
+	        //        return 0;
+	        }
+
+			// when get ACK, means Set Success
+			torlerance=I2C_PollingWait;
+			while(!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED))
+			{
+			//	 if (torlerance-- == 0)
+		    // return 0;	
+			}
+		
+			I2C_SendData(I2C1, *pBuffer);
+			for(i=1;i<8;i++)
+			{
+				
+				torlerance=I2C_PollingWait;
+			 // while(!((I2C_GetLastEvent(I2C1))&0x00070080))	;
+			  	if( I2C1->SR1 & 0x0400)  //AF
+				  {
+				  	 I2C1->SR1 &= (uint16_t)~(0x0400);
+				  }
+			    if( I2C1->SR1 & 0x0100)
+				    {
+				      I2C1->SR1 &= (uint16_t)~(0x0100);
+				    }
+			  
+			  I2C_SendData(I2C1, *(pBuffer+i));
+		    }
+			I2C_GenerateSTOP(I2C1, ENABLE);
+			BinSemPost(I2C_BUSYNOW_FLAG);
+			return i;
+	}
+	return 0;
+}
+
+uint8_t i2c_buffer_read(void)
+{
+	uint8_t i;
+	uint8_t *pBuffer;
+	uint16_t torlerance;
+
+	pBuffer=RxBuffer;
+	I2C_AcknowledgeConfig(I2C1, ENABLE);
+	if(BinSemPend(I2C_BUSYNOW_FLAG))
+	{
+			I2C_GenerateSTART(I2C1, ENABLE);
+		  
+		  torlerance=I2C_PollingWait;
+			while(!(I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT)))
+			{
+				 if (torlerance-- == 0)
+		     return 0;	
+			}
+		
+			I2C_Send7bitAddress(I2C1,SlaveAddr,I2C_Direction_Receiver);
+			torlerance=I2C_PollingWait;
+			 while ((I2C1->SR1&0x0002) != 0x0002)
+	        {
+	          //  if (torlerance-- == 0)
+	            //    return 0;
+	        }
+		
+		  torlerance=I2C_PollingWait;
+		//	while(!(I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED)))
+		//	{
+			//	 if (torlerance-- == 0)
+		    // return 0;	
+		//	}
+				
+//			 while(NumToRead)
+//				{
+//					if(NumToRead==1)
+//						{
+//							I2C_AcknowledgeConfig(I2C1, DISABLE);
+//		
+//							I2C_GenerateSTOP(I2C1, ENABLE);
+//							break;
+//						}
+//		
+//					if((I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED)))
+//					{
+//						*pBuffer = I2C_ReceiveData(I2C1);
+//		
+//						pBuffer++;
+//		
+//						NumToRead--;
+//					}
+//					else
+//					{
+//						break;	
+//					}
+//				}
+			for(i=0;i<8;i++)
+			{
+				
+				 torlerance=I2C_PollingWait;
+//				 	while(!(I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_RECEIVED)))
+//				{
+					// if (torlerance-- == 0)
+			    // return 0;	
+			//	}
+				 while ((I2C1->SR1 & 0x00040) != 0x000040);
+
+				*(pBuffer+i) = I2C_ReceiveData(I2C1);
+				if(6==i)
+				{
+					I2C_AcknowledgeConfig(I2C1, DISABLE);
+					
+				}	
+			}
+			
+		I2C_GenerateSTOP(I2C1, ENABLE);
+		BinSemPost(I2C_BUSYNOW_FLAG);
+			return i;
+	}
+	return 0;
+}
+
+#endif

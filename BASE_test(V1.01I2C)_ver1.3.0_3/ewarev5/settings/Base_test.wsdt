@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<Workspace>
+  <ConfigDictionary>
+    
+  <CurrentConfigs><Project>Base_test/Debug</Project></CurrentConfigs></ConfigDictionary>
+  <Desktop>
+    <Static>
+      <Workspace>
+        <ColumnWidths>
+          
+          
+          
+          
+        <Column0>211</Column0><Column1>0</Column1><Column2>27</Column2><Column3>0</Column3></ColumnWidths>
+      <PreferedWindows><Position>1</Position><ScreenPosX>0</ScreenPosX><ScreenPosY>0</ScreenPosY><Windows/></PreferedWindows></Workspace>
+      <Build>
+        
+        
+        
+        
+      <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>915</ColumnWidth1><ColumnWidth2>244</ColumnWidth2><ColumnWidth3>61</ColumnWidth3></Build>
+    <Debug-Log><ColumnWidth0>20</ColumnWidth0><ColumnWidth1>1221</ColumnWidth1></Debug-Log><TerminalIO/><Find-in-Files><ColumnWidth0>440</ColumnWidth0><ColumnWidth1>62</ColumnWidth1><ColumnWidth2>754</ColumnWidth2></Find-in-Files></Static>
+    <Windows>
+      
+      
+    <Wnd2>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-17716-21637</Identity>
+            <TabName>Build</TabName>
+            <Factory>Build</Factory>
+            <Session/>
+          </Tab>
+        <Tab><Identity>TabID-11837-10959</Identity><TabName>Debug Log</TabName><Factory>Debug-Log</Factory><Session/></Tab><Tab><Identity>TabID-7076-8309</Identity><TabName>Find in Files</TabName><Factory>Find-in-Files</Factory><Session/></Tab><Tab><Identity>TabID-4362-16552</Identity><TabName>Breakpoints</TabName><Factory>Breakpoints</Factory></Tab></Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd2><Wnd3><Tabs><Tab><Identity>TabID-12800-9254</Identity><TabName>Workspace</TabName><Factory>Workspace</Factory><Session><NodeDict><ExpandedNode>Base_test</ExpandedNode><ExpandedNode>Base_test/bsp</ExpandedNode><ExpandedNode>Base_test/user</ExpandedNode></NodeDict></Session></Tab></Tabs><SelectedTab>0</SelectedTab></Wnd3></Windows>
+    <Editor>
+      
+      
+      
+      
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\lwip-1.3.1\port\helloworld.c</Filename><XPos>0</XPos><YPos>57</YPos><SelStart>4000</SelStart><SelEnd>4000</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\BSP\shellcmd.h</Filename><XPos>0</XPos><YPos>16</YPos><SelStart>543</SelStart><SelEnd>543</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\lwip-1.3.1\port\ethernetif.c</Filename><XPos>0</XPos><YPos>221</YPos><SelStart>7087</SelStart><SelEnd>7087</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\STM32F10x_StdPeriph_Driver\src\stm32f10x_pwr.c</Filename><XPos>0</XPos><YPos>104</YPos><SelStart>3050</SelStart><SelEnd>3050</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\lwip-1.3.1\port\client.c</Filename><XPos>0</XPos><YPos>85</YPos><SelStart>3394</SelStart><SelEnd>3394</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\lwip-1.3.1\src\core\ipv4\inet.c</Filename><XPos>0</XPos><YPos>245</YPos><SelStart>6925</SelStart><SelEnd>6925</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\user\com_manager.c</Filename><XPos>0</XPos><YPos>24</YPos><SelStart>1183</SelStart><SelEnd>1183</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\user\Realtimedb.h</Filename><XPos>0</XPos><YPos>59</YPos><SelStart>1166</SelStart><SelEnd>1166</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\STM32F10x_StdPeriph_Driver\src\stm32f10x_flash.c</Filename><XPos>0</XPos><YPos>305</YPos><SelStart>20091</SelStart><SelEnd>20091</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\user\Proj_Config.h</Filename><XPos>0</XPos><YPos>6</YPos><SelStart>788</SelStart><SelEnd>788</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\user\soe.c</Filename><XPos>0</XPos><YPos>48</YPos><SelStart>1535</SelStart><SelEnd>1545</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\user\Realtimedb.c</Filename><XPos>0</XPos><YPos>107</YPos><SelStart>3403</SelStart><SelEnd>3403</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\STM32F10x_StdPeriph_Driver\inc\stm32f10x_rcc.h</Filename><XPos>0</XPos><YPos>423</YPos><SelStart>18305</SelStart><SelEnd>18316</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\STM32F10x_StdPeriph_Driver\src\stm32f10x_bkp.c</Filename><XPos>0</XPos><YPos>220</YPos><SelStart>6673</SelStart><SelEnd>6673</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\CMSIS\stm32f10x.h</Filename><XPos>0</XPos><YPos>483</YPos><SelStart>36583</SelStart><SelEnd>36586</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\STM32_ETH_Driver\inc\stm32_eth.h</Filename><XPos>0</XPos><YPos>394</YPos><SelStart>26637</SelStart><SelEnd>26738</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\BSP\bsp.h</Filename><XPos>0</XPos><YPos>98</YPos><SelStart>2974</SelStart><SelEnd>2982</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\user\RTC_Time.c</Filename><XPos>0</XPos><YPos>60</YPos><SelStart>2557</SelStart><SelEnd>2557</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\STM32F10x_StdPeriph_Driver\src\stm32f10x_gpio.c</Filename><XPos>0</XPos><YPos>270</YPos><SelStart>8649</SelStart><SelEnd>8649</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\STM32F10x_StdPeriph_Driver\src\stm32f10x_rtc.c</Filename><XPos>0</XPos><YPos>212</YPos><SelStart>5332</SelStart><SelEnd>5332</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\STM32F10x_StdPeriph_Driver\src\stm32f10x_rcc.c</Filename><XPos>0</XPos><YPos>1294</YPos><SelStart>46348</SelStart><SelEnd>46348</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\lwip-1.3.1\src\core\netif.c</Filename><XPos>0</XPos><YPos>229</YPos><SelStart>7337</SelStart><SelEnd>7337</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\user\netconf.c</Filename><XPos>0</XPos><YPos>184</YPos><SelStart>5385</SelStart><SelEnd>5385</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\lwip-1.3.1\src\core\tcp.c</Filename><XPos>0</XPos><YPos>100</YPos><SelStart>3817</SelStart><SelEnd>3817</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\STM32_ETH_Driver\src\stm32_eth.c</Filename><XPos>0</XPos><YPos>239</YPos><SelStart>9330</SelStart><SelEnd>9330</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\BSP\tcp_modbus.c</Filename><XPos>0</XPos><YPos>205</YPos><SelStart>5774</SelStart><SelEnd>5774</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\BSP\bsp.c</Filename><XPos>0</XPos><YPos>305</YPos><SelStart>11418</SelStart><SelEnd>11418</SelEnd></Tab><ActiveTab>26</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\lwip-1.3.1\src\include\lwip\netif.h</Filename><XPos>0</XPos><YPos>126</YPos><SelStart>5351</SelStart><SelEnd>5351</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\user\stm32f10x_it.c</Filename><XPos>0</XPos><YPos>232</YPos><SelStart>5979</SelStart><SelEnd>5979</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\BSP\shellcmd.c</Filename><XPos>0</XPos><YPos>1299</YPos><SelStart>33036</SelStart><SelEnd>33036</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\user\main.c</Filename><XPos>0</XPos><YPos>220</YPos><SelStart>6754</SelStart><SelEnd>6754</SelEnd></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Positions>
+      
+      
+      
+      
+      
+    <Top><Row0><Sizes><Toolbar-00f3ee78><key>iaridepm.enu1</key></Toolbar-00f3ee78></Sizes></Row0></Top><Left><Row0><Sizes><Wnd3><Rect><Top>-2</Top><Left>-2</Left><Bottom>510</Bottom><Right>275</Right><x>-2</x><y>-2</y><xscreen>61</xscreen><yscreen>140</yscreen><sizeHorzCX>60636</sizeHorzCX><sizeHorzCY>187668</sizeHorzCY><sizeVertCX>275348</sizeVertCX><sizeVertCY>686327</sizeVertCY></Rect></Wnd3></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd2><Rect><Top>-2</Top><Left>-2</Left><Bottom>191</Bottom><Right>1008</Right><x>-2</x><y>-2</y><xscreen>1010</xscreen><yscreen>193</yscreen><sizeHorzCX>1003976</sizeHorzCX><sizeHorzCY>258713</sizeHorzCY><sizeVertCX>156064</sizeVertCX><sizeVertCY>121984</sizeVertCY></Rect></Wnd2></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+  </Desktop>
+</Workspace>
+
+

@@ -1,0 +1,9 @@
+.\out\file.o: ..\efsl\source\file.c
+.\out\file.o: ..\efsl\include\file.h
+.\out\file.o: ..\efsl\include\config.h
+.\out\file.o: ..\efsl\include\error.h
+.\out\file.o: ..\efsl\include\config.h
+.\out\file.o: ..\efsl\include\interface.h
+.\out\file.o: ..\efsl\include\types.h
+.\out\file.o: ..\efsl\include\config.h
+.\out\file.o: ..\efsl\include\config.h

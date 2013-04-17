@@ -1,0 +1,11 @@
+.\out\extract.o: ..\efsl\source\extract.c
+.\out\extract.o: ..\efsl\include\extract.h
+.\out\extract.o: ..\efsl\include\config.h
+.\out\extract.o: ..\efsl\include\disc.h
+.\out\extract.o: ..\efsl\include\config.h
+.\out\extract.o: ..\efsl\include\error.h
+.\out\extract.o: ..\efsl\include\config.h
+.\out\extract.o: ..\efsl\include\interface.h
+.\out\extract.o: ..\efsl\include\types.h
+.\out\extract.o: ..\efsl\include\config.h
+.\out\extract.o: ..\efsl\include\config.h
