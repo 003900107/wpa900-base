@@ -155,7 +155,8 @@ const ShellCmd CmdTable[]=
   {"tripmap",CmdShowData,1},//27
   {"ip", CmdShowIP,0}, //28
   {"restoreip", CmdQNA, 1}, //29
-  {"ethreset", CmdResetEth, 1}, //30
+  {"ethreset", CmdQNA, 1}, //30
+  {"updatefirmware", CmdQNA, 1}, //31
   {0,0,0}
 };
 
@@ -274,6 +275,9 @@ uint32_t ShellCmdMatch(char *a,char *b,uint8_t len)
         break;
       case 29:
         Shell_Msg.m_type=CMD_RESET_ETH;
+        break;
+      case 30:
+        Shell_Msg.m_type=CMD_UPDATE_FIRMWARE;
         break;        
         
       default: 
@@ -282,7 +286,7 @@ uint32_t ShellCmdMatch(char *a,char *b,uint8_t len)
       
       if(!isCom)
       {
-        if( (Shell_Msg.m_type != CMD_RESTOREIP)||(Shell_Msg.m_type != CMD_RESET_ETH) )
+        if( (Shell_Msg.m_type != CMD_RESTOREIP)&&(Shell_Msg.m_type != CMD_RESET_ETH) )
         {
           result=CmdTable[j].CmdFunc(b,&Shell_Msg);
           break;
@@ -292,7 +296,7 @@ uint32_t ShellCmdMatch(char *a,char *b,uint8_t len)
       {
         if((Shell_Msg.m_type == CMD_RESTOREIP)||(Shell_Msg.m_type == CMD_SHOWIP)
            ||(Shell_Msg.m_type == CMD_REBOOT)||(Shell_Msg.m_type == CMD_DI)
-             ||(Shell_Msg.m_type == CMD_RESET_ETH))
+             ||(Shell_Msg.m_type == CMD_RESET_ETH)||(Shell_Msg.m_type == CMD_UPDATE_FIRMWARE))
         {
           result=CmdTable[j].CmdFunc(b,&Shell_Msg);
           break;
@@ -1090,6 +1094,8 @@ uint32_t CmdQNA(char *outputstr,T_MESSAGE *message)
   case CMD_DCCAL:
   case CMD_SET: 
   case CMD_RESTOREIP:
+  case CMD_RESET_ETH:
+  case CMD_UPDATE_FIRMWARE:
 #if LINGUA == EN 
     sprintf(outputstr,"Enter Password Please!\r\n");
     p+=strlen("Enter Password Please!\r\n");
@@ -1132,10 +1138,13 @@ uint32_t CmdPwdAsserted(char *outputstr,T_MESSAGE *message)
 {
   char *p;
   p=outputstr;
+    uint16_t bak_dr = 0;  
+  
   switch(message->m_type)
   {
   case CMD_DO:
     DoExecute((unsigned char)(message->m_intdata[0]));
+    
 #if LINGUA == EN  
     sprintf(outputstr,"DO Executed!Please Check the Di Change\r\n");
     p+=strlen("DO Executed!Please Check the Di Change\r\n");
@@ -1144,6 +1153,7 @@ uint32_t CmdPwdAsserted(char *outputstr,T_MESSAGE *message)
     sprintf(outputstr,"遥控已操作，请查看遥信状态\r\n");
     p+=strlen("遥控已操作，请查看遥信状态\r\n");
 #endif
+    
     Shell_State=INIT;
     message->m_type=CMD_NULL;
     break;
@@ -1157,7 +1167,8 @@ uint32_t CmdPwdAsserted(char *outputstr,T_MESSAGE *message)
 #if LINGUA == CH
     sprintf(outputstr,"输入“通道序号 系数”\r\n");     
     p+=strlen("输入“通道序号 系数”\r\n");
-#endif  
+#endif
+    
     Shell_State=ENTER_DATA;
     break;
     
@@ -1170,11 +1181,13 @@ uint32_t CmdPwdAsserted(char *outputstr,T_MESSAGE *message)
     sprintf(outputstr,"输入IP地址\r\n");     
     p+=strlen("输入IP地址\r\n");
 #endif
+    
     Shell_State=ENTER_ADDR;
     break;  
     
   case CMD_CALB:
     Calibration();
+    
 #if LINGUA == EN  
     sprintf(outputstr,"Please Check the result of calibration\r\n");
     p+=strlen("Please Check the result of calibration\r\n");
@@ -1183,12 +1196,14 @@ uint32_t CmdPwdAsserted(char *outputstr,T_MESSAGE *message)
     sprintf(outputstr,"校准完毕，核对遥测值\r\n");
     p+=strlen("校准完毕，核对遥测值\r\n");
 #endif
+    
     Shell_State=INIT;
     message->m_type=CMD_NULL;
     break;   
     
   case CMD_DCCAL:
     Can_Ticalib(CAN1);
+    
 #if LINGUA == EN  
     sprintf(outputstr,"Please Check the result of calibration\r\n");
     p+=strlen("Please Check the result of calibration\r\n");
@@ -1197,6 +1212,7 @@ uint32_t CmdPwdAsserted(char *outputstr,T_MESSAGE *message)
     sprintf(outputstr,"标准源校准完毕，核对直流量\r\n");
     p+=strlen("标准源校准完毕，核对直流量\r\n");
 #endif
+    
     Shell_State=INIT;
     message->m_type=CMD_NULL;
     break;
@@ -1210,6 +1226,7 @@ uint32_t CmdPwdAsserted(char *outputstr,T_MESSAGE *message)
     sprintf(outputstr,"输入通讯参数\r\n");     
     p+=strlen("输入通讯参数\r\n");
 #endif
+    
     Shell_State=ENTER_ADDR;
     break; 
     
@@ -1221,6 +1238,32 @@ uint32_t CmdPwdAsserted(char *outputstr,T_MESSAGE *message)
     p+=strlen("是否确认恢复默认IP, 确认请按<Y>, 按其它键返回\r\n");
     
     Shell_State=ENTER_RESTOREADDR;
+    break;
+    
+    //TYH:20130508 恢复以太网 
+  case CMD_RESET_ETH:
+    //复位以太网
+    Ethernet_SWRST();
+    
+    sprintf(outputstr,"是开始重置设备以太网,请等待.......\r\n");     
+    p+=strlen("开始重置设备以太网,请等待.......\r\n");    
+    
+    Shell_State=INIT;
+    message->m_type=CMD_NULL;
+    break;
+    
+    //TYH:20130508 设置固件升级 
+  case CMD_UPDATE_FIRMWARE:  
+    //写备份寄存器 'KP_DR10', 用于启动升级固件
+    bak_dr = BKP_ReadBackupRegister(BKP_DR10);
+    if(bak_dr != 0x0707)
+      BKP_WriteBackupRegister(BKP_DR10, 0x0707);    
+    
+    sprintf(outputstr,"bak_dr=0x%4x 设置固件升级, 请重启设备启动升级!\r\n", bak_dr);     
+    p+=strlen("bak_dr=0xffff 设置固件升级, 请重启设备启动升级!\r\n");  
+    
+    Shell_State=INIT;
+    message->m_type=CMD_NULL;    
     break;    
     
   default:
@@ -1293,24 +1336,3 @@ uint32_t CmdShowIP(char *outputstr,T_MESSAGE *message)
   return (p-outputstr);	
 }
 
-
-uint32_t CmdResetEth(char *outputstr,T_MESSAGE *message)
-{
-  char *p;
-  
-  memset (outputstr,0,1314);
-  p=outputstr;    
-  
-#if LINGUA ==EN
-  sprintf(p,"Begin reset ETH, please wait.......\r\n");
-  p = p+strlen("Begin reset ETH, please wait.......\r\n");
-#elif LINGUA ==CH
-  sprintf(p,"开始重置设备以太网,请等待.......\r\n");
-  p = p+strlen("开始重置设备以太网,请等待.......\r\n");
-#endif
-  
-  //复位以太网
-  Ethernet_SWRST();
-  
-  return (p-outputstr);  
-}

@@ -72,7 +72,8 @@ const char USERMANUAL[] = {
                                 "║查看系统总线错误日志:almrec                         ║\r\n"  \
                                   "║重启装置:reset                                      ║\r\n"  \
                                     "║(仅支持串口)重启以太网:ethreset                     ║\r\n"  \
-                                      "╚══════════════════════════╝\r\n" \
+                                      "║设置设置升级固件:updatefirmware                     ║\r\n"  \
+                                        "╚══════════════════════════╝\r\n" \
 }; 
 
 
@@ -231,6 +232,16 @@ static err_t HelloWorld_recv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err
           else
             charsum = 0;
           break;
+          
+//        case RESET_ETH:
+//          charsum=ShellResetEth(name->bytes,Outputstr,name->length);
+//          CmdnShellInit(); 
+//          break;
+//
+//        case UPDATE_FIRMWARE:
+//          charsum=ShellUpdateFirmware(name->bytes,Outputstr,name->length);
+//          CmdnShellInit(); 
+//          break;          
           
         default:
           break;
@@ -416,7 +427,15 @@ void UartProcess(char *RxBuffer, char RxCounter)
       
     case ENTER_RESTOREADDR:
       charsum=ShellEtrRestoreIP(RxBuffer, Outputstr, 4); 
-      CmdnShellInit(); 
+      CmdnShellInit();
+      
+//    case RESET_ETH:
+//      charsum=ShellResetEth(RxBuffer, Outputstr, RxCounter); 
+//      CmdnShellInit(); 
+//
+//    case UPDATE_FIRMWARE:
+//      charsum=ShellUpdateFirmware(RxBuffer, Outputstr, RxCounter); 
+//      CmdnShellInit();       
       
     default:
       break;

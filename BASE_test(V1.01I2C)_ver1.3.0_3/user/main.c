@@ -225,7 +225,6 @@ int main(void)
     CommunicationInit();
   }
   
-  
   printf(" ******* 输入'$'将触发串口控制台!*******\r\n\r\n");
   GPIO_WriteBit(CANTX_LED,  Bit_SET);
   GPIO_WriteBit(CANRX_LED,  Bit_SET);

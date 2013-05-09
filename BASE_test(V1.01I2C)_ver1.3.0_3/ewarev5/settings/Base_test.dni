@@ -15,7 +15,7 @@ WatchCond=_ 0
 Watch0=_ 0 "" 0 "" 0 "" 0 "" 0 0 0 0
 Watch1=_ 0 "" 0 "" 0 "" 0 "" 0 0 0 0
 [DebugChecksum]
-Checksum=1414286650
+Checksum=297478920
 [DisAssemblyWindow]
 NumStates=_ 1
 State 1=_ 1
@@ -74,6 +74,22 @@ ShowTimeLog=1
 ShowTimeSum=0
 Title0=Power [mA]
 Setup0=0 1 0 500 2 0 4 1 0
+[Disassemble mode]
+mode=0
+[Breakpoints]
+Bp0=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\lwip-1.3.1\src\core\netif.c}.158.3@1" 0 0 0 0 "" 0 "" 0
+Bp1=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\user\main.c}.104.3@1" 1 0 0 0 "" 0 "" 0
+Bp2=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\BSP\tcp_modbus.c}.219.3@1" 1 0 0 0 "" 0 "" 0
+Bp3=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\BSP\tcp_modbus.c}.315.4@1" 0 0 0 0 "" 0 "" 0
+Bp4=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\STM32_ETH_Driver\src\stm32_eth.c}.225.5@1" 1 0 0 0 "" 0 "" 0
+Bp5=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\STM32_ETH_Driver\src\stm32_eth.c}.243.7@1" 1 0 0 0 "" 0 "" 0
+Bp6=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\STM32_ETH_Driver\src\stm32_eth.c}.253.7@1" 1 0 0 0 "" 0 "" 0
+Bp7=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\STM32_ETH_Driver\src\stm32_eth.c}.265.7@1" 1 0 0 0 "" 0 "" 0
+Bp8=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\user\Realtimedb.c}.122.7@1" 0 0 0 0 "" 0 "" 0
+Bp9=_ "STD_CODE" "{E:\yun\百度云\github\wpa900-base\BASE_test(V1.01I2C)_ver1.3.0_3\lwip-1.3.1\port\helloworld.c}.396.7@1" 1 0 0 0 "" 0 "" 0
+Bp10=_ "STD_CODE" "{E:\yun\百度云\github\wpa900-base\BASE_test(V1.01I2C)_ver1.3.0_3\lwip-1.3.1\port\helloworld.c}.392.7@1" 1 0 0 0 "" 0 "" 0
+Bp11=_ "STD_CODE" "{E:\yun\百度云\github\wpa900-base\BASE_test(V1.01I2C)_ver1.3.0_3\BSP\shellcmd.c}.1259.5@1" 1 0 0 0 "" 0 "" 0
+Count=12
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
@@ -81,6 +97,15 @@ Category=_ 0
 [TermIOLog]
 LoggingEnabled=_ 0
 LogFile=_ ""
+[Aliases]
+A0=_ "C:\Users\ppw\Desktop\BASE_test(V1.01I2C)_ver1.2.2\BSP\BaseBus_Protocol.c" ""
+A1=_ "E:\My Labs_4working\BASE_test\CMSIS\core_cm3.h" ""
+A2=_ "E:\My Labs_4working\BASE_test\user\main.c" ""
+A3=_ "E:\My Labs_4working\BASE_test\user\system_stm32f10x.c" ""
+A4=_ "E:\My Labs_4working\WPA600\BASE_test\STM32F10x_StdPeriph_Driver\src\stm32f10x_can.c" ""
+A5=_ "E:\My Labs_4working\WPU\BASE_test\lwip-1.3.1\src\core\netif.c" ""
+Count=6
+SuppressDialog=1
 [SWOTraceWindow]
 PcSampling=0
 InterruptLogs=0
@@ -100,30 +125,3 @@ Enabled=0
 Mode=3
 Graph=0
 Symbiont=0
-[Disassemble mode]
-mode=0
-[Breakpoints]
-Bp0=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\lwip-1.3.1\src\core\netif.c}.158.3@1" 0 0 0 0 "" 0 "" 0
-Bp1=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\lwip-1.3.1\port\helloworld.c}.336.3@1" 1 0 0 0 "" 0 "" 0
-Bp2=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\user\main.c}.104.3@1" 1 0 0 0 "" 0 "" 0
-Bp3=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\BSP\tcp_modbus.c}.219.3@1" 1 0 0 0 "" 0 "" 0
-Bp4=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\BSP\tcp_modbus.c}.315.4@1" 0 0 0 0 "" 0 "" 0
-Bp5=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\STM32_ETH_Driver\src\stm32_eth.c}.225.5@1" 1 0 0 0 "" 0 "" 0
-Bp6=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\STM32_ETH_Driver\src\stm32_eth.c}.243.7@1" 1 0 0 0 "" 0 "" 0
-Bp7=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\STM32_ETH_Driver\src\stm32_eth.c}.253.7@1" 1 0 0 0 "" 0 "" 0
-Bp8=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\STM32_ETH_Driver\src\stm32_eth.c}.265.7@1" 1 0 0 0 "" 0 "" 0
-Bp9=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\user\Realtimedb.c}.122.7@1" 0 0 0 0 "" 0 "" 0
-Bp10=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\user\main.c}.136.3@1" 1 0 0 0 "" 0 "" 0
-Bp11=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\BSP\bsp.c}.421.3@1" 1 0 0 0 "" 0 "" 0
-Bp12=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\BSP\bsp.c}.354.5@1" 1 0 0 0 "" 0 "" 0
-Bp13=_ "STD_CODE" "{E:\IAR\BASE_test(V1.01I2C)_ver1.3.0\BSP\bsp.c}.359.5@1" 1 0 0 0 "" 0 "" 0
-Count=14
-[Aliases]
-A0=_ "C:\Users\ppw\Desktop\BASE_test(V1.01I2C)_ver1.2.2\BSP\BaseBus_Protocol.c" ""
-A1=_ "E:\My Labs_4working\BASE_test\CMSIS\core_cm3.h" ""
-A2=_ "E:\My Labs_4working\BASE_test\user\main.c" ""
-A3=_ "E:\My Labs_4working\BASE_test\user\system_stm32f10x.c" ""
-A4=_ "E:\My Labs_4working\WPA600\BASE_test\STM32F10x_StdPeriph_Driver\src\stm32f10x_can.c" ""
-A5=_ "E:\My Labs_4working\WPU\BASE_test\lwip-1.3.1\src\core\netif.c" ""
-Count=6
-SuppressDialog=1
