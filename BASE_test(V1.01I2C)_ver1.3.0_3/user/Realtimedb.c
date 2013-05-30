@@ -3,11 +3,12 @@
 #include "stm32f10x_bkp.h"
 #include "Proj_Config.h"
 
-#define     FLASH_PAGE_SIZE         0x400         // 1K per page 
-#define     FLASH_WAIT_TIMEOUT      100000 
+#define FLASH_PAGE_SIZE         0x400         // 1K per page 
+#define FLASH_WAIT_TIMEOUT      100000 
 //#define IPCHECK(a,b,c,d)  ((a==0xAC&&b==0x14&&c!=0xFF&&d!=0xFF)?1:0)
 #define IPCHECK(a,b,c,d)  ((a!=0xFF&&b!=0xFF&&c!=0xFF&&d!=0xFF)?1:0)   //IP地址可以在172.20以外	 Feb.27 2013
 #define MEMCHECK(a,b,c,d)  ((a!=0xFF&&b!=0xFF&&c!=0xFF&&d!=0xFF)?1:0)
+
 Setting SetCurrent;
 uint8_t DevNameStr[16]="Unnamed Device";
 
@@ -138,4 +139,12 @@ void DataBase_Init(uint8_t *IPTab)
   Get_ChipSerialNum();
   
   SetCurrent.vers = VERSION;
+  
+  if((SetCurrent.eth_link_time == 0xffff)&&(SetCurrent.eth_recv_time == 0xffff))
+  {//没有初始化过,采用默认值
+    SetCurrent.eth_link_time = ETH_LINK_TIME;
+    SetCurrent.eth_recv_time = ETH_RECV_TIME;
+  }
+  
+  return;
 }

@@ -31,7 +31,6 @@
 #define Ethernet_HWRST_FLAG 0X10
 #define Ethernet_SWRST_FLAG 0X01
 
-
 #define COMRX_LED    GPIOA, GPIO_Pin_8
 #define COMTX_LED    GPIOC, GPIO_Pin_9
 #define CANRX_LED    GPIOC, GPIO_Pin_7
@@ -86,6 +85,7 @@ typedef struct
   uint32_t count;
   struct tm t_begin;
   struct tm t_now;
+  uint32_t SWRST_count; //Èí¸´Î»¼ÆÊýÆ÷
 }Count_Type;
 
 

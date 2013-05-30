@@ -72,8 +72,10 @@ const char USERMANUAL[] = {
                                 "║查看系统总线错误日志:almrec                         ║\r\n"  \
                                   "║重启装置:reset                                      ║\r\n"  \
                                     "║(仅支持串口)重启以太网:ethreset                     ║\r\n"  \
-                                      "║设置设置升级固件:updatefirmware                     ║\r\n"  \
-                                        "╚══════════════════════════╝\r\n" \
+                                      "║设置设备升级固件:updatefirmware                     ║\r\n"  \
+                                        "║设置断网判断时间(单位:分钟,默认为10):setlinktime    ║\r\n"  \
+                                          "║设置通信中断恢复(单位:分钟,默认为10):setrecvtime    ║\r\n"  \
+                                            "╚══════════════════════════╝\r\n" \
 }; 
 
 
@@ -233,10 +235,10 @@ static err_t HelloWorld_recv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err
             charsum = 0;
           break;
           
-//        case RESET_ETH:
-//          charsum=ShellResetEth(name->bytes,Outputstr,name->length);
-//          CmdnShellInit(); 
-//          break;
+        case SET_ETH_TIME:
+          charsum=ShellSetEthTime(name->bytes,Outputstr,name->length);
+          CmdnShellInit(); 
+          break;
 //
 //        case UPDATE_FIRMWARE:
 //          charsum=ShellUpdateFirmware(name->bytes,Outputstr,name->length);
@@ -429,13 +431,15 @@ void UartProcess(char *RxBuffer, char RxCounter)
       charsum=ShellEtrRestoreIP(RxBuffer, Outputstr, 4); 
       CmdnShellInit();
       
-//    case RESET_ETH:
-//      charsum=ShellResetEth(RxBuffer, Outputstr, RxCounter); 
-//      CmdnShellInit(); 
-//
-//    case UPDATE_FIRMWARE:
-//      charsum=ShellUpdateFirmware(RxBuffer, Outputstr, RxCounter); 
-//      CmdnShellInit();       
+    case SET_ETH_TIME:
+      charsum=ShellSetEthTime(RxBuffer,Outputstr,RxCounter);
+      CmdnShellInit(); 
+      break;
+      
+      //
+      //    case UPDATE_FIRMWARE:
+      //      charsum=ShellUpdateFirmware(RxBuffer, Outputstr, RxCounter); 
+      //      CmdnShellInit();       
       
     default:
       break;

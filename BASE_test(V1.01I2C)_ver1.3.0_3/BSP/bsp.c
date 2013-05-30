@@ -23,8 +23,7 @@ u16 SelectValueTab[30];
 #define ON 1
 #define OFF 0
 
-#define ETH_LINK_TIME 1 //以分钟为单位
-#define ETH_RECV_TIME 1
+#define ETH_SWRST_COUNT 10  //软件复位最大次数
 
 #define LSE_READ_ERROR    ((uint32_t)0x7FFFF)  //TYH: RTC等待'LSE'超时 
 #define RCT_CLK_LSE   1   //RCT时钟为LSE
@@ -43,6 +42,7 @@ CAN_FilterInitTypeDef  CAN_FilterInitStructure;
 #endif
 extern CanRxMsg RxMessage;
 extern CanTxMsg TxMessage;
+extern Setting SetCurrent;
 
 /*唯一身份标识*/
 u32 DeviceSerial[3];
@@ -148,6 +148,7 @@ void GPIO_Configuration(void)
 */
 void NVIC_Configuration(void)
 {
+  //TYH:2013-05-10设置程序启动地址
   //NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0xA000); 
   
   /* Configure and enable ADC interrupt */
@@ -852,16 +853,11 @@ void Time_Update(void)
 }
 
 void SysTick_Configuration(void)
-
 {
   if (SysTick_Config(SystemCoreClock / SYSTICK_INTERVAL))
-    
   { 
-    
     /* Capture error */ 
-    
     while (1);
-    
   }
   
 }
@@ -1255,9 +1251,18 @@ uint8_t EthStateCheck(void)
       if(EthRecvCheck())
       {
         //是否要进行以太网复位
-        if(eth_recv_count.count > ETH_RECV_TIME) //大于指定的时间, 复位以太网
+        if(eth_recv_count.count > SetCurrent.eth_recv_time) //大于指定的时间, 复位以太网
         {
-          Set_eth_reset_flag(Ethernet_SWRST_FLAG);
+          if(eth_recv_count.SWRST_count < ETH_SWRST_COUNT)
+          {
+            Set_eth_reset_flag(Ethernet_SWRST_FLAG);
+            eth_recv_count.SWRST_count++;
+          }
+          else
+          {
+            Set_eth_reset_flag(Ethernet_HWRST_FLAG);
+            eth_recv_count.SWRST_count = 0;
+          }
         }
       }      
     }
@@ -1265,7 +1270,7 @@ uint8_t EthStateCheck(void)
   else  //1.没有链接  2.没有链接,且以太网曾经初始化过(此种情况是否要复位)
   {
     //是否要进行以太网复位
-    if(eth_link_count.count > ETH_LINK_TIME) //大于指定的时间, 复位以太网
+    if(eth_link_count.count > SetCurrent.eth_link_time) //大于指定的时间, 复位以太网
     {
       Set_eth_reset_flag(Ethernet_HWRST_FLAG);
     }
@@ -1392,7 +1397,7 @@ void Ethernet_SWRST()
   EthInitState = 0;  
   Ethernet_parameter_init();
   
-  printf(" ******* 以太网[软件]复位完成, 等待连接信号重新初始化... *******\r\n");
+  printf(" ******* 以太网[软件]复位完成, 等待重新初始化... *******\r\n");
   
   return;
 }
@@ -1403,9 +1408,9 @@ void Ethernet_HWRST()
   
   //启用硬件复位
   GPIO_WriteBit(ETH_RESET,  Bit_RESET);
-  Delay(10);
+  Delay(100);
   GPIO_WriteBit(ETH_RESET,  Bit_SET);
-  Delay(100);  
+  Delay(1000);  
   
   printf(" ******* 以太网[硬件]复位完成, 等待连接信号重新初始化... *******\r\n");
 }
@@ -1440,6 +1445,7 @@ uint8_t Get_eth_reset_flag()
 uint8_t Reset_eth_recv_count()
 {
   eth_recv_count.count = 0;
+  eth_recv_count.SWRST_count = 0;
   
   return 1;
 }

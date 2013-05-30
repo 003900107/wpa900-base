@@ -84,7 +84,10 @@ int main(void)
   To reconfigure the default setting of SystemInit() function, refer to
   system_stm32f10x.c file
   */     
-  //GPIO_InitTypeDef GPIO_InitStructure;     
+  //GPIO_InitTypeDef GPIO_InitStructure;
+  //uint32_t irq; //test IRQ
+  
+  
   /* System clocks configuration ---------------------------------------------*/
   SystemInit();
   RCC_Configuration();
@@ -156,22 +159,6 @@ int main(void)
   printf(" <<<<<<< CAN config complete <<<<<<<\r\n\r\n");  
 #endif
   
-  /* ethernet configuration ------------------------------------------------------*/
-  //可添加延时, 用以确保DM9000启动时电压满足芯片要求
-  //"nRST must not go high until after the VDDIO and VDD_CORE supplies are stable"  手册P51
-  GPIO_WriteBit(ETH_RESET,  Bit_SET);   //拉高DM9000 nRST, 复位启动
-  
-  printf(" >>>>>>> ETH config begin >>>>>>>\r\n");
-  Ethernet_Configuration();
-#ifdef TEST_PARTS  
-  GPIO_WriteBit(CANTX_LED,  Bit_RESET);
-  GPIO_WriteBit(CANRX_LED,  Bit_SET);
-  GPIO_WriteBit(COMTX_LED,  Bit_RESET);
-  GPIO_WriteBit(COMRX_LED,  Bit_SET);
-#endif  
-  printf(" <<<<<<< ETH config complete <<<<<<<\r\n\r\n");
-
-
 #ifndef TEST  
   /*temperature configuration------------------------------------------------------*/
   printf(" >>>>>>> TEMPMEA config begin >>>>>>>\r\n");
@@ -184,7 +171,6 @@ int main(void)
 #endif 
   printf(" <<<<<<< TEMPMEA config complete <<<<<<<\r\n\r\n");
 #endif
-  
   
   /* SysTick configuration ------------------------------------------------------*/
   printf(" >>>>>>> SysTick config begin >>>>>>>\r\n");
@@ -207,11 +193,32 @@ int main(void)
   GPIO_WriteBit(COMRX_LED,  Bit_RESET);
 #endif  
   printf(" <<<<<<< NVIC config complete <<<<<<<\r\n\r\n");
-
   
   /* Update the SysTick IRQ priority should be higher than the Ethernet IRQ */
   /* The Localtime should be updated during the Ethernet packets processing */
   NVIC_SetPriority (SysTick_IRQn, 1); 
+  
+  /* test IRQ*/
+//  irq = NVIC_GetPriority(SysTick_IRQn);
+//  irq = NVIC_GetPriority(ETH_IRQn);
+//  irq = NVIC_GetPriority(I2C1_ER_IRQn);
+//  irq = NVIC_GetPriority(I2C1_EV_IRQn);
+  
+  
+  /* ethernet configuration ------------------------------------------------------*/
+  //可添加延时, 用以确保DM9000启动时电压满足芯片要求
+  //"nRST must not go high until after the VDDIO and VDD_CORE supplies are stable"  手册P51
+  GPIO_WriteBit(ETH_RESET,  Bit_SET);   //拉高DM9000 nRST, 复位启动
+  
+  printf(" >>>>>>> ETH config begin >>>>>>>\r\n");
+  Ethernet_Configuration();
+#ifdef TEST_PARTS  
+  GPIO_WriteBit(CANTX_LED,  Bit_RESET);
+  GPIO_WriteBit(CANRX_LED,  Bit_SET);
+  GPIO_WriteBit(COMTX_LED,  Bit_RESET);
+  GPIO_WriteBit(COMRX_LED,  Bit_SET);
+#endif  
+  printf(" <<<<<<< ETH config complete <<<<<<<\r\n\r\n");  
 
     
 #ifdef WATCHDOG
@@ -233,7 +240,7 @@ int main(void)
   
   
   //启动完成, 进入常规流程
-  uint8_t test = 0;
+  //uint8_t test = 0;
   while (1)
   {
     Di_PostWork();
@@ -249,7 +256,7 @@ int main(void)
       Ethernet_SWRST();
     else if(reset_flag == Ethernet_HWRST_FLAG)
       Ethernet_HWRST();
-    
+    /*
     //tyh:20130407 eth reset test
     if((DiStatus_DI[1].Value != test)&&(DiStatus_DI[1].Value == 1))
     {
@@ -257,6 +264,7 @@ int main(void)
       Ethernet_HWRST();
     }
     test = DiStatus_DI[1].Value;
+    */
     
 //    else
 //    {

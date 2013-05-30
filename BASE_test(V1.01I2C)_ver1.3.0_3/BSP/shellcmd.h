@@ -36,7 +36,9 @@
 #define CMD_REBOOT 0x13
 #define CMD_RESET_ETH 0x14
 #define CMD_UPDATE_FIRMWARE 0x15
-
+//tyh:20130530 添加串修改以太网判断时间
+#define CMD_ETH_LINK_TIME 0x16
+#define CMD_ETH_RECV_TIME 0x17
 
 
 /*人机交互状态*/
@@ -52,7 +54,7 @@
 #define SET_PARA  0x00100
 
 #define ENTER_RESTOREADDR 0x0012
-//#define RESET_ETH 0x0013
+#define SET_ETH_TIME 0x0013
 //#define UPDATE_FIRMWARE 0x0014
 
 
@@ -108,6 +110,7 @@ uint32_t CmdRestart(char *outputstr,T_MESSAGE *message);
 void CmdnShellInit(void);
 uint32_t ShellEtrRestoreIP(char *entry, char *b,uint8_t len);
 uint32_t CmdShowIP(char *outputstr,T_MESSAGE *message);
+uint32_t ShellSetEthTime(char *entry, char *b,uint8_t len);
 
 #endif
 

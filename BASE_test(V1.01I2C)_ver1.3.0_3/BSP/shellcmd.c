@@ -157,6 +157,8 @@ const ShellCmd CmdTable[]=
   {"restoreip", CmdQNA, 1}, //29
   {"ethreset", CmdQNA, 1}, //30
   {"updatefirmware", CmdQNA, 1}, //31
+  {"setlinktime", CmdQNA, 1}, //32
+  {"setrecvtime", CmdQNA, 1}, //33
   {0,0,0}
 };
 
@@ -278,7 +280,13 @@ uint32_t ShellCmdMatch(char *a,char *b,uint8_t len)
         break;
       case 30:
         Shell_Msg.m_type=CMD_UPDATE_FIRMWARE;
-        break;        
+        break;
+      case 31:
+        Shell_Msg.m_type=CMD_ETH_LINK_TIME;
+        break;
+      case 32:
+        Shell_Msg.m_type=CMD_ETH_RECV_TIME;
+        break;
         
       default: 
         return 0; 
@@ -871,7 +879,6 @@ uint32_t CmdSetting(char *outputstr,T_MESSAGE *message)
     //{
     
     if (AiCoefSet(message->m_intdata[0],message->m_intdata[1]))
-      // AiCoefSet(message->m_intdata[0],message->m_intdata[1])
     {
 #if LINGUA == EN
       if(10==message->m_intdata[0])
@@ -901,7 +908,7 @@ uint32_t CmdSetting(char *outputstr,T_MESSAGE *message)
         p+=strlen(normale);
       }
 #endif
-      //}
+      
       return (p-outputstr);
     }
     else
@@ -941,8 +948,7 @@ uint32_t CmdSetting(char *outputstr,T_MESSAGE *message)
     memcpy(setaddr->IPaddress,DevIPAddressTab,4);
 #if STORE_METHOD == FLASH_METHOD 
     if( DataBase_Write(STORAGE_ROMADDR,(u32 *)setaddr,sizeof(Setting)))
-#endif
-#if STORE_METHOD == BKP_METHOD
+#elif STORE_METHOD == BKP_METHOD
       if( DataBase_Write(STORAGE_ROMADDR,(u16 *)setaddr,sizeof(Setting)))
 #endif
       {
@@ -967,30 +973,6 @@ uint32_t CmdSetting(char *outputstr,T_MESSAGE *message)
 #endif
       } 
     break; 
-    /* if( DataBase_Write(BACKUPS_ROMADDR,(u32 *)setaddr,sizeof(Setting)))
-    {
-#if LINGUA == EN
-    sprintf(p,"the new IP writed to backup successfully\r\n");
-    p+=strlen("the new IP writed to backup successfully\r\n");
-#endif
-#if LINGUA == CH
-    sprintf(p,"新IP写入备用ROM失败\r\n");
-    p+=strlen("新IP写入备用ROM失败\r\n");
-#endif
-    return (p-outputstr);
-  }
-    else
-    {
-#if LINGUA == EN
-    sprintf(p,"the new IP writed to backup fault\r\n");
-    p+=strlen("the new IP writed to backup fault\r\n");
-#endif
-#if LINGUA == CH
-    sprintf(p,"新IP写入备用ROM失败\r\n");
-    p+=strlen("新IP写入备用ROM失败\r\n");
-#endif	
-    return (p-outputstr);
-  }  */
     
   case CMD_TI:
     message->m_type=CMD_NULL;
@@ -1096,6 +1078,8 @@ uint32_t CmdQNA(char *outputstr,T_MESSAGE *message)
   case CMD_RESTOREIP:
   case CMD_RESET_ETH:
   case CMD_UPDATE_FIRMWARE:
+  case CMD_ETH_LINK_TIME:
+  case CMD_ETH_RECV_TIME:
 #if LINGUA == EN 
     sprintf(outputstr,"Enter Password Please!\r\n");
     p+=strlen("Enter Password Please!\r\n");
@@ -1138,7 +1122,7 @@ uint32_t CmdPwdAsserted(char *outputstr,T_MESSAGE *message)
 {
   char *p;
   p=outputstr;
-    uint16_t bak_dr = 0;  
+  uint16_t bak_dr = 0;  
   
   switch(message->m_type)
   {
@@ -1243,7 +1227,7 @@ uint32_t CmdPwdAsserted(char *outputstr,T_MESSAGE *message)
     //TYH:20130508 恢复以太网 
   case CMD_RESET_ETH:
     //复位以太网
-    Ethernet_SWRST();
+    Ethernet_HWRST();
     
     sprintf(outputstr,"是开始重置设备以太网,请等待.......\r\n");     
     p+=strlen("开始重置设备以太网,请等待.......\r\n");    
@@ -1264,6 +1248,15 @@ uint32_t CmdPwdAsserted(char *outputstr,T_MESSAGE *message)
     
     Shell_State=INIT;
     message->m_type=CMD_NULL;    
+    break;
+    
+    //TYH:20130530 设置以太网状态判断时间  
+  case CMD_ETH_LINK_TIME:
+  case CMD_ETH_RECV_TIME:
+    sprintf(outputstr,"输入以太网判断时间参数\r\n");     
+    p+=strlen("输入以太网判断时间参数\r\n");
+    
+    Shell_State=SET_ETH_TIME;
     break;    
     
   default:
@@ -1336,3 +1329,70 @@ uint32_t CmdShowIP(char *outputstr,T_MESSAGE *message)
   return (p-outputstr);	
 }
 
+uint32_t ShellSetEthTime(char *entry, char *b, uint8_t len)
+{
+  uint16_t time;
+  uint8_t type;
+  T_MESSAGE *message;
+  Setting *setaddr;
+  char *p;
+  
+  setaddr=&SetCurrent;
+  message = &Shell_Msg;
+  type = 0;
+  
+  p = entry;
+  time=atoi(p);
+  
+  p = b;
+  
+  setaddr->Mem_Used_Check=0xA55A;
+  if(message->m_type == CMD_ETH_LINK_TIME)
+  {
+    setaddr->eth_link_time = time;
+    type = 1;
+  }
+  else if(message->m_type == CMD_ETH_RECV_TIME)
+  {
+    setaddr->eth_recv_time = time;
+    type = 2;
+  }
+  else //使用默认设置
+  {
+    setaddr->eth_recv_time = ETH_RECV_TIME;
+    setaddr->eth_link_time = ETH_LINK_TIME;
+    type = 0xff;
+  }
+  
+#if STORE_METHOD == FLASH_METHOD 
+  if( DataBase_Write(STORAGE_ROMADDR,(u32 *)setaddr,sizeof(Setting)))
+#elif STORE_METHOD == BKP_METHOD
+    if( DataBase_Write(STORAGE_ROMADDR,(u16 *)setaddr,sizeof(Setting)))
+#endif
+    {      
+      if(type == 1)
+      {
+        sprintf(b,"新以太网链接判断时间写入ROM成功\r\n");
+        p+=strlen("新以太网链接判断时间写入ROM成功\r\n");
+      }
+      else if(type == 2)
+      {
+        sprintf(b,"新以太网数据收发判断时间写入ROM成功\r\n");
+        p+=strlen("新以太网数据收发判断时间写入ROM成功\r\n");
+      }
+      else //使用默认设置
+      {
+        sprintf(b,"默认以太网时间参数写入ROM成功\r\n");
+        p+=strlen("默认以太网时间参数写入ROM成功\r\n");
+      }
+    }
+    else
+    {
+      sprintf(b,"新以太网时间参数写入ROM失败\r\n");
+      p+=strlen("新以太网时间参数写入ROM失败\r\n");
+    }
+  
+  message->m_type=CMD_NULL;
+  
+  return (p-b);
+}

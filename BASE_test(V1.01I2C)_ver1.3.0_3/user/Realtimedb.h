@@ -19,6 +19,9 @@
 #define SOE_FLASH_MAXNUM 25
 #define ERR_FLASH_MAXNUM 10
 
+#define ETH_LINK_TIME 10 //以分钟为单位
+#define ETH_RECV_TIME 10 //以分钟为单位
+
 typedef struct tag_SETTING_ITEM
 {
   uint8_t SETTYPE;
@@ -80,6 +83,9 @@ typedef struct tag_SETTING
   ComPara Com2Para;
   TrigSoe TrigSoeQueue;
   TrigError ErrorQueue;
+  //tyh:20130530 添加以太网状态判断时间
+  u16 eth_link_time;
+  u16 eth_recv_time;
 }Setting;
 
 #if STORE_METHOD == FLASH_METHOD
