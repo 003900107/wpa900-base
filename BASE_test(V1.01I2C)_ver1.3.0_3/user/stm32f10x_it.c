@@ -205,6 +205,7 @@ void I2C1_EV_IRQHandler(void)
 * @param  None
 * @retval None
 */
+
 #ifdef CAN_APP
 void CAN1_RX0_IRQHandler(void)
 {

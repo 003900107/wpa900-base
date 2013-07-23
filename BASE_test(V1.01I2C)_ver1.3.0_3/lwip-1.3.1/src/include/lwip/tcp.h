@@ -99,6 +99,8 @@ struct tcp_pcb * tcp_listen_with_backlog(struct tcp_pcb *pcb, u8_t backlog);
 void             tcp_abandon (struct tcp_pcb *pcb, int reset);
 #define          tcp_abort(pcb) tcp_abandon((pcb), 1)
 err_t            tcp_close   (struct tcp_pcb *pcb);
+//tyh:20130723 增加对于已经连接的PCB的处理，确保异常复位后的恢复
+err_t            tcp_close_all_active   (void);
 
 /* Flags for "apiflags" parameter in tcp_write and tcp_enqueue */
 #define TCP_WRITE_FLAG_COPY 0x01

@@ -28,6 +28,8 @@ __________________________________________________________________*/
 #define TEST_PARTS
 //#define TEST_RTC
 #define PRINTF_TEST
-#define CAN_APP
+//#define CAN_APP
+
+//#define WATCHDOG
 
 #endif

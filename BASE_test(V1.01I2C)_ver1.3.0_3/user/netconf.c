@@ -119,7 +119,7 @@ void LwIP_Init(void)
   if(netif_test == NULL)
   {
     netif_add(&netif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &ethernet_input);
-    netifnum++;
+    netifnum = netif.num+1; //tyh:20130715 保存netifnum，用以关闭LWIP的时候查找使用
     
     /*  Registers the default network interface.*/
     netif_set_default(&netif);

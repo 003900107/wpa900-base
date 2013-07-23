@@ -185,7 +185,7 @@ void NVIC_Configuration(void)
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 4;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_Init(&NVIC_InitStructure);
-#endif  
+#endif
   
 }
 
@@ -1345,8 +1345,6 @@ void CloseEth(void)
 {
   err_t err;
   
-  LwIP_Close();
-  
   err = tcp_close(hello_pcb);
   
   //udp_remove(pad_pcb);
@@ -1359,6 +1357,10 @@ void CloseEth(void)
 #ifdef PT103EN
   //err = tcp_close(ns103_pcb);
 #endif 
+  
+  tcp_close_all_active();
+  
+  LwIP_Close();
   
   return;
 }

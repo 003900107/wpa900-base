@@ -181,6 +181,17 @@ tcp_input(struct pbuf *p, struct netif *inp)
     LWIP_ASSERT("tcp_input: active pcb->state != CLOSED", pcb->state != CLOSED);
     LWIP_ASSERT("tcp_input: active pcb->state != TIME-WAIT", pcb->state != TIME_WAIT);
     LWIP_ASSERT("tcp_input: active pcb->state != LISTEN", pcb->state != LISTEN);
+   
+    //tyh:20130723 判断pcb队列是否出现重复循环
+    if(pcb == pcb->next)
+    {
+      //tcp_pcb_remove(&tcp_active_pcbs, pcb);
+      //memp_free(MEMP_TCP_PCB, pcb);
+      //snmp_inc_tcpattemptfails(); 
+      
+      pcb->next = NULL;
+    }     
+    
     if (pcb->remote_port == tcphdr->src &&
        pcb->local_port == tcphdr->dest &&
        ip_addr_cmp(&(pcb->remote_ip), &(iphdr->src)) &&

@@ -186,6 +186,34 @@ tcp_close(struct tcp_pcb *pcb)
   return err;
 }
 
+
+//tyh
+err_t
+tcp_close_all_active(void)
+{
+  err_t err;
+  struct tcp_pcb *pcb;
+  
+  /* Check the connected pcbs. */
+  while( (pcb = tcp_active_pcbs) != NULL ) 
+  {
+    err = ERR_OK;
+    tcp_pcb_remove(&tcp_active_pcbs, pcb);
+    memp_free(MEMP_TCP_PCB, pcb);
+    pcb = NULL;
+    snmp_inc_tcpattemptfails(); 
+    
+//    err = tcp_send_ctrl(pcb, TCP_FIN);
+//    if (err == ERR_OK) 
+//    {
+//      snmp_inc_tcpestabresets();
+//      pcb->state = LAST_ACK;
+//    }    
+  }
+  
+  return err;
+}
+
 /**
  * Abandons a connection and optionally sends a RST to the remote
  * host.  Deletes the local protocol control block. This is done when
@@ -282,14 +310,24 @@ tcp_bind(struct tcp_pcb *pcb, struct ip_addr *ipaddr, u16_t port)
   /* Check the connected pcbs. */
   for(cpcb = tcp_active_pcbs;
       cpcb != NULL; cpcb = cpcb->next) {
-    if (cpcb->local_port == port) {
-      if (ip_addr_isany(&(cpcb->local_ip)) ||
-          ip_addr_isany(ipaddr) ||
-          ip_addr_cmp(&(cpcb->local_ip), ipaddr)) {
-        return ERR_USE;
+        //tyh:20130723 判断pcb队列是否出现重复循环
+        if(cpcb == cpcb->next)
+        {
+          //tcp_pcb_remove(&tcp_active_pcbs, cpcb);
+          //memp_free(MEMP_TCP_PCB, cpcb);
+          //snmp_inc_tcpattemptfails(); 
+          
+          cpcb->next = NULL;
+        }
+        
+        if (cpcb->local_port == port) {
+          if (ip_addr_isany(&(cpcb->local_ip)) ||
+              ip_addr_isany(ipaddr) ||
+                ip_addr_cmp(&(cpcb->local_ip), ipaddr)) {
+                  return ERR_USE;
+                }
+        }
       }
-    }
-  }
   /* Check the bound, not yet connected pcbs. */
   for(cpcb = tcp_bound_pcbs; cpcb != NULL; cpcb = cpcb->next) {
     if (cpcb->local_port == port) {
@@ -466,6 +504,16 @@ tcp_new_port(void)
   }
   
   for(pcb = tcp_active_pcbs; pcb != NULL; pcb = pcb->next) {
+    //tyh:20130723 判断pcb队列是否出现重复循环
+    if(pcb == pcb->next)
+    {
+      //tcp_pcb_remove(&tcp_active_pcbs, pcb);
+      //memp_free(MEMP_TCP_PCB, pcb);
+      //snmp_inc_tcpattemptfails(); 
+      
+      pcb->next = NULL;
+    }  
+    
     if (pcb->local_port == port) {
       goto again;
     }
@@ -795,8 +843,18 @@ void
 tcp_fasttmr(void)
 {
   struct tcp_pcb *pcb;
-
+  
   for(pcb = tcp_active_pcbs; pcb != NULL; pcb = pcb->next) {
+    //tyh:20130723 判断pcb队列是否出现重复循环
+    if(pcb == pcb->next)
+    {
+      //tcp_pcb_remove(&tcp_active_pcbs, pcb);
+      //memp_free(MEMP_TCP_PCB, pcb);
+      //snmp_inc_tcpattemptfails(); 
+      
+      pcb->next = NULL;
+    }
+    
     /* If there is data which was previously "refused" by upper layer */
     if (pcb->refused_data != NULL) {
       /* Notify again application with data previously received. */
@@ -931,9 +989,19 @@ tcp_kill_prio(u8_t prio)
   inactivity = 0;
   inactive = NULL;
   for(pcb = tcp_active_pcbs; pcb != NULL; pcb = pcb->next) {
+    //tyh:20130723 判断pcb队列是否出现重复循环
+    if(pcb == pcb->next)
+    {
+      //tcp_pcb_remove(&tcp_active_pcbs, pcb);
+      //memp_free(MEMP_TCP_PCB, pcb);
+      //snmp_inc_tcpattemptfails(); 
+      
+      pcb->next = NULL;
+    }    
+    
     if (pcb->prio <= prio &&
-       pcb->prio <= mprio &&
-       (u32_t)(tcp_ticks - pcb->tmr) >= inactivity) {
+        pcb->prio <= mprio &&
+          (u32_t)(tcp_ticks - pcb->tmr) >= inactivity) {
       inactivity = tcp_ticks - pcb->tmr;
       inactive = pcb;
       mprio = pcb->prio;
@@ -1415,6 +1483,16 @@ tcp_debug_print_pcbs(void)
   struct tcp_pcb *pcb;
   LWIP_DEBUGF(TCP_DEBUG, ("Active PCB states:\n"));
   for(pcb = tcp_active_pcbs; pcb != NULL; pcb = pcb->next) {
+    //tyh:20130723 判断pcb队列是否出现重复循环
+    if(pcb == pcb->next)
+    {
+      //tcp_pcb_remove(&tcp_active_pcbs, pcb);
+      //memp_free(MEMP_TCP_PCB, pcb);
+      //snmp_inc_tcpattemptfails(); 
+      
+      pcb->next = NULL;
+    }      
+    
     LWIP_DEBUGF(TCP_DEBUG, ("Local port %"U16_F", foreign port %"U16_F" snd_nxt %"U32_F" rcv_nxt %"U32_F" ",
                        pcb->local_port, pcb->remote_port,
                        pcb->snd_nxt, pcb->rcv_nxt));
@@ -1444,6 +1522,16 @@ tcp_pcbs_sane(void)
 {
   struct tcp_pcb *pcb;
   for(pcb = tcp_active_pcbs; pcb != NULL; pcb = pcb->next) {
+    //tyh:20130723 判断pcb队列是否出现重复循环
+    if(pcb == pcb->next)
+    {
+      //tcp_pcb_remove(&tcp_active_pcbs, pcb);
+      //memp_free(MEMP_TCP_PCB, pcb);
+      //snmp_inc_tcpattemptfails(); 
+      
+      pcb->next = NULL;
+    }  
+    
     LWIP_ASSERT("tcp_pcbs_sane: active pcb->state != CLOSED", pcb->state != CLOSED);
     LWIP_ASSERT("tcp_pcbs_sane: active pcb->state != LISTEN", pcb->state != LISTEN);
     LWIP_ASSERT("tcp_pcbs_sane: active pcb->state != TIME-WAIT", pcb->state != TIME_WAIT);

@@ -14,7 +14,8 @@ GOD is our refuge and strength,a very present help in trouble.
 #include <string.h>
 
 
-extern  NetState comstate[4];
+extern NetState comstate[4];
+extern uint8_t DevIPAddressTab[4];
 
 /* Private define ------------------------------------------------------------*/
 #define MAX_BUFF_SIZE 16
@@ -219,7 +220,7 @@ void udp_time_tick_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, str
   memset(&RxBuffer,0,45) ;
   
   c = p->payload;
-  len = p->len;
+  len = p->len;  
   
   if((0xFF != c[0]) && (0x01 != c[1]))
   {
@@ -233,8 +234,8 @@ void udp_time_tick_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, str
     return;
   }
   
-  memcpy(RxBuffer.bytes, c, len);
-  
+  memcpy(RxBuffer.bytes, c, len); 
+
   if(RxBuffer.bytes[8]<100)
     t.tm_year =RxBuffer.bytes[8]+2000;
   else
@@ -274,6 +275,11 @@ void udp_time_tick_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, str
     Time_SetCalendarTime(t);
   }
   
+  //tyh:20130710 添加报文回送,用以确认及主站获取装置IP
+  memcpy(p->payload, &DevIPAddressTab[0], 4);
+  p->tot_len = p->len = 4;
+  udp_sendto(upcb, p, addr, port);   
+  
   pbuf_free(p);
   
   return;
@@ -289,6 +295,8 @@ void udp_timing_close( struct udp_pcb *upcb)
 }
 
 
+
+//test,仅作测试用
 struct udp_pcb * udp_test_init(void)
 {
    struct udp_pcb *upcb;

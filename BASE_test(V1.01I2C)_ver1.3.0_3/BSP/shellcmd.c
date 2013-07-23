@@ -637,11 +637,8 @@ uint32_t CmdShowData(char *outputstr,T_MESSAGE *message)
     p+=strlen("╔══totaldis%2d══╗\r\n");
 #endif
 #if LINGUA ==CH	
-    //sprintf(p, "╔══遥信总数%2d══╗\r\n",16);
-    //p+=strlen("╔══遥信总数%2d══╗\r\n");
-    
-    sprintf(p, "╔══遥信总数%2d══╗",16);
-    p+=strlen("╔══遥信总数%2d══╗");
+    sprintf(p, "╔══遥信总数%2d══╗\r\n",16);
+    p+=strlen("╔══遥信总数%2d══╗\r\n");
     
 #endif    
     for(i=0;i<8;i++)

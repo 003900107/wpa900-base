@@ -120,12 +120,12 @@ static err_t HelloWorld_recv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err
   struct name *name = (struct name *)arg;
   int done;
   char *c;
-  char *Outputstr;
-  //char Outputstr[1314];
+  //char *Outputstr;
+  char Outputstr[1314];
   int i,charsum;
   
-  //memset(Outputstr,0,1314);
-  Outputstr=(char*)calloc(1314,1);//看来改用碓动态分配吧
+  memset(Outputstr,0,1314);
+  //Outputstr=(char*)calloc(1314,1);//看来改用碓动态分配吧
   
   /* We perform here any necessary processing on the pbuf */
   if (p != NULL) 
@@ -157,6 +157,7 @@ static err_t HelloWorld_recv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err
         }  
       }
     }
+    
     if(done) 
     {
       
@@ -182,7 +183,7 @@ static err_t HelloWorld_recv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err
       //   tcp_write(pcb, HELLO, strlen(HELLO), 1);
       
       //tcp_write(pcb, name->bytes, name->length, TCP_WRITE_FLAG_COPY);
-      if(NULL!=Outputstr)
+      if(NULL != Outputstr)
       {
         isCom = 0;
         switch(Shell_State)
@@ -196,7 +197,7 @@ static err_t HelloWorld_recv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err
           break;
           
         case ENTER_DATA:
-          charsum=ShellEtrData(name->bytes,Outputstr,4); 
+          charsum=ShellEtrData(name->bytes,Outputstr,4);
           CmdnShellInit();
           break; 
           
@@ -256,13 +257,14 @@ static err_t HelloWorld_recv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err
         //  }
         else
 	  tcp_write(pcb, CHARSUMIS0, strlen(CHARSUMIS0), 1);
+        
         name->length = 0;
-        memset(Outputstr,0,512);
+        memset(Outputstr,0,1314);
       }
     }
     
     /* End of processing, we free the pbuf */
-    free(Outputstr);
+    //free(Outputstr);
     pbuf_free(p);
   }  
   else if (err == ERR_OK) 
@@ -270,7 +272,7 @@ static err_t HelloWorld_recv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err
     /* When the pbuf is NULL and the err is ERR_OK, the remote end is closing the connection. */
     /* We free the allocated memory and we close the connection */
     mem_free(name);
-    free(Outputstr);
+    //free(Outputstr);
     comstate[TERM].state=0;
     
     return tcp_close(pcb);
@@ -290,7 +292,7 @@ static err_t HelloWorld_accept(void *arg, struct tcp_pcb *pcb, err_t err)
 {  
   char IDString[192]; 
   /* Tell LwIP to associate this structure with this connection. */
-  tcp_arg(pcb, mem_calloc(sizeof(struct name), 1));	
+  tcp_arg(pcb, mem_calloc(sizeof(struct name), 1));
   
   /* Configure LwIP to use our call back functions. */
   tcp_err(pcb, HelloWorld_conn_err);
@@ -341,7 +343,7 @@ struct tcp_pcb * HelloWorld_init(void)
 * @brief  This function is called when an error occurs on the connection 
 * @param  arg
 * @parm   err
-* @retval None 
+* @retval None
 */
 static void HelloWorld_conn_err(void *arg, err_t err)
 {

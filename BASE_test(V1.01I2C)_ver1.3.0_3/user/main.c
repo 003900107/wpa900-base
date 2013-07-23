@@ -240,7 +240,7 @@ int main(void)
   
   
   //启动完成, 进入常规流程
-  //uint8_t test = 0;
+  uint8_t test = 0;
   while (1)
   {
     Di_PostWork();
@@ -256,7 +256,7 @@ int main(void)
       Ethernet_SWRST();
     else if(reset_flag == Ethernet_HWRST_FLAG)
       Ethernet_HWRST();
-    /*
+    
     //tyh:20130407 eth reset test
     if((DiStatus_DI[1].Value != test)&&(DiStatus_DI[1].Value == 1))
     {
@@ -264,7 +264,7 @@ int main(void)
       Ethernet_HWRST();
     }
     test = DiStatus_DI[1].Value;
-    */
+    
     
 //    else
 //    {

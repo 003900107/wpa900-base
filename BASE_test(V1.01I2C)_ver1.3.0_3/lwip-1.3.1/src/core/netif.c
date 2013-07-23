@@ -120,6 +120,14 @@ netif_add(struct netif *netif, struct ip_addr *ipaddr, struct ip_addr *netmask,
   /* remember netif specific state information data */
   netif->state = state;
   netif->num = netifnum++;
+  
+  //test
+  if(netifnum == 0)
+  {
+    printf("test");
+  }  
+  //test
+  
   netif->input = input;
 #if LWIP_NETIF_HWADDRHINT
   netif->addr_hint = NULL;
@@ -195,27 +203,46 @@ void netif_remove(struct netif * netif)
   snmp_delete_ipaddridx_tree(netif);
 
   /*  is it the first netif? */
-  if (netif_list == netif) {
-    netif_list = netif->next;
+  if (netif_list == netif) 
+  {
+    //tyh:20130715 为了避免查询netif_list出现死循环, 顾在此做出赋值判断
+    if(netif->next != netif)
+      netif_list = netif->next;
+    else
+      netif_list = NULL;
+    
     snmp_dec_iflist();
   }
   else {
     /*  look for netif further down the list */
     struct netif * tmpNetif;
-    for (tmpNetif = netif_list; tmpNetif != NULL; tmpNetif = tmpNetif->next) {
-      if (tmpNetif->next == netif) {
+    for (tmpNetif = netif_list; tmpNetif != NULL; tmpNetif = tmpNetif->next) 
+    {
+      //tyh:20130715 添加netif指针出现循环状态的处理
+      if(tmpNetif->next == tmpNetif)
+      {
+        snmp_dec_iflist();
+        netif_list = NULL;
+        break;
+      }
+      
+      if (tmpNetif->next == netif) 
+      {
         tmpNetif->next = netif->next;
         snmp_dec_iflist();
         break;
       }
     }
+    
     if (tmpNetif == NULL)
       return; /*  we didn't find any netif today */
   }
+  
   /* this netif is default? */
   if (netif_default == netif)
     /* reset default netif */
     netif_set_default(NULL);
+  
   LWIP_DEBUGF( NETIF_DEBUG, ("netif_remove: removed netif\n") );
 }
 
