@@ -61,6 +61,9 @@ float I2C_MeasureTab[MEANUM];
 uint8_t Burst_Measure[MEANUM];
 uint8_t Burst_Di[16];
 
+//tyh:20130730 增加AI复位次数记录
+float AI_Reset_Count = 0;
+
 static float MeaRecording[MEANUM];
 
 #define HEADCHECK(a,b)  ((a==0xA5&&b==0x5A)?1:0)
@@ -176,8 +179,9 @@ bool AiQuerry(void)
     result=I2C_Master_BufferRead(RxBuffer,8,AIN);
 #endif
 #if MEAUPDATE_METHOD==MEMBLKCP
-    result=I2C_Master_BufferRead(RxBuffer,98,AIN);
+    result=I2C_Master_BufferRead(RxBuffer,/*98*/102,AIN);  //tyh20130730
 #endif
+    
     /*TYH: 添加出错处理 20120928*/
     if(result != Success)
     {
@@ -252,7 +256,9 @@ void AiProcess(unsigned char AiSeq)
 #if MEAUPDATE_METHOD==MEMBLKCP
 void AiProcess(unsigned char *pDatacopied)
 {
-  memcpy((u8*)I2C_MeasureTab,pDatacopied,92);	
+  memcpy((u8*)I2C_MeasureTab,pDatacopied,92);
+  //20130730 tyh 记录AI复位次数
+  memcpy(&AI_Reset_Count, pDatacopied+92, 4);
 }
 #endif 
 /*
@@ -266,20 +272,19 @@ void Deal_I2CComming(void)
   u16 CRCValue;
   //if(1==MasterReceptionComplete)
   {
-    if(HEADCHECK	(RxBuffer[0],RxBuffer[1]))
+    if( HEADCHECK(RxBuffer[0], RxBuffer[1]) )
     {
       switch(RxBuffer[2])
       {
       case AI_RES:
-        
 #if MEAUPDATE_METHOD == MEMBLKCP
-        
         //CRCValue =checksum16(RxBuffer, 100);
         CRC_ResetDR();
-        CRCValue =CRC_CalcBlockCRC((uint32_t *)RxBuffer,24);
-        if((RxBuffer[96] == (CRCValue&0xFF))&&(RxBuffer[97] ==(CRCValue>>8&0xFF)))
+        CRCValue =CRC_CalcBlockCRC((uint32_t *)RxBuffer,/*24*/25);
+        if((RxBuffer[/*96*/100] == (CRCValue&0xFF))&&(RxBuffer[/*97*/101] ==(CRCValue>>8&0xFF)))  //tyh:20130730 增加复位次数的传输
           AiProcess(RxBuffer+4);
 #endif 
+        
 #if MEAUPDATE_METHOD == SINGLEBYTE	 
         AiProcess(RxBuffer[3]);
 #endif
@@ -328,19 +333,18 @@ void I2CHW_Maintain(void)
     {
       if(BusBusyCounter != 0)
         BusBusyCounter = 0;
+      
       GPIO_WriteBit(ALARM_LED,  Bit_SET);
-      
-      
     }
-    
   }
   
   if(BusBusyCounter>0x08)
   {
     I2C_Cmd(I2C1,DISABLE);
     I2C_Cmd(I2C1,ENABLE);
+    
     I2CHW_Reset();
-    BusBusyCounter=0;   
+    BusBusyCounter=0;
     //NVIC_SystemReset();
   }
 } 

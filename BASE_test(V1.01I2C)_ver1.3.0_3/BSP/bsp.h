@@ -130,6 +130,8 @@ uint8_t Set_eth_reset_flag(const uint8_t flag);
 uint8_t Get_eth_reset_flag();
 uint8_t Reset_eth_recv_count();
 
+//tyh:20130731
+//void I2C_Configuration_cpal(void);
 
 #endif
 

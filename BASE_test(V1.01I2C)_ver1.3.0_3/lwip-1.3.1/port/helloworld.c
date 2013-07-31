@@ -160,8 +160,8 @@ static err_t HelloWorld_recv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err
     
     if(done) 
     {
-      
       comstate[TERM].state=1;
+      
       if(name->bytes[name->length-2] != '\r' || name->bytes[name->length-1] != '\n') 
       {
         if((name->bytes[name->length-1] == '\r' || name->bytes[name->length-1] == '\n') && (name->length+1 <= MAX_NAME_SIZE)) 
@@ -240,11 +240,11 @@ static err_t HelloWorld_recv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err
           charsum=ShellSetEthTime(name->bytes,Outputstr,name->length);
           CmdnShellInit(); 
           break;
-//
-//        case UPDATE_FIRMWARE:
-//          charsum=ShellUpdateFirmware(name->bytes,Outputstr,name->length);
-//          CmdnShellInit(); 
-//          break;          
+          //
+          //        case UPDATE_FIRMWARE:
+          //          charsum=ShellUpdateFirmware(name->bytes,Outputstr,name->length);
+          //          CmdnShellInit(); 
+          //          break;          
           
         default:
           break;

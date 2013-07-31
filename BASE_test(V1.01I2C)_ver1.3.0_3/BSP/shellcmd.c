@@ -22,6 +22,7 @@ extern Setting SetCurrent;
 extern uint8_t DevNameStr[16];
 extern uint8_t Compress_Factor;
 extern __IO uint8_t Can_Online;
+extern float AI_Reset_Count;
 //extern __IO struct tm time_now;
 /*颜色控制定义*/
 const char *const vert ="\033[0;32;40m" ;
@@ -75,6 +76,7 @@ const MeasureItem MeaPropTab[28]=
   {"Th3","mV",6000},
   {"Th4","mV",6000},
 };
+
 const DisignItem DisignTab[16]=
 {
   //{"遥信开入一",0},
@@ -159,6 +161,7 @@ const ShellCmd CmdTable[]=
   {"updatefirmware", CmdQNA, 1}, //31
   {"setlinktime", CmdQNA, 1}, //32
   {"setrecvtime", CmdQNA, 1}, //33
+  {"aicount", CmdShowData, 1},   //34
   {0,0,0}
 };
 
@@ -286,6 +289,9 @@ uint32_t ShellCmdMatch(char *a,char *b,uint8_t len)
         break;
       case 32:
         Shell_Msg.m_type=CMD_ETH_RECV_TIME;
+        break;
+      case 33:
+        Shell_Msg.m_type=CMD_AI_RESET_COUNT;
         break;
         
       default: 
@@ -845,6 +851,11 @@ uint32_t CmdShowData(char *outputstr,T_MESSAGE *message)
     break;
     
   case CMD_SHOWIP://20130312 TYH:添加IP显示命令处理
+    break;
+    
+  case CMD_AI_RESET_COUNT:  //tyh:20130730
+    sprintf(p,"AI RESET COUNT = %7.0f\r\n", AI_Reset_Count);
+    p+=strlen("AI RESET COUNT = 1234567\r\n");
     break;
     
   default:

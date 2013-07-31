@@ -6,6 +6,8 @@
 
 #include "bsp.h"
 #include "Proj_Config.h"
+//#include "cpal_i2c.h"
+//#include "cpal.h"
 
 __IO  int timingdelay;
 __IO uint32_t LocalTime = 0; /* this variable is used to create a time reference incremented by 1ms */
@@ -310,6 +312,7 @@ void I2C_Configuration(void)
 #if I2CMETHOD ==INTERRUPT
   I2C_ITConfig(I2C1, I2C_IT_EVT|I2C_IT_BUF|I2C_IT_ERR, ENABLE);
 #endif
+  
 #if I2CMETHOD ==DMA		
   DMA_DeInit(DMA1_Channel6);
   
@@ -329,6 +332,7 @@ void I2C_Configuration(void)
   DMA_DeInit(DMA1_Channel7);
   DMA_Init(DMA1_Channel7, &I2CDMA_InitStructure);
 #endif
+  
 }
 
 void RTC_Configuration(void)
@@ -1453,5 +1457,30 @@ uint8_t Reset_eth_recv_count()
 }
 
 
+//void I2C_Configuration_cpal(void)
+//{
+///* Configure the device structure */
+//  CPAL_I2C_StructInit(&I2C1_DevStructure);      /* Set all fields to default values */
+//  
+//  I2C_DevStructure.CPAL_Mode = CPAL_MODE_MASTER;
+//  
+//#ifdef CPAL_I2C_DMA_PROGMODEL
+//  I2C_DevStructure.wCPAL_Options =  CPAL_OPT_NO_MEM_ADDR | CPAL_OPT_DMATX_TCIT | CPAL_OPT_DMARX_TCIT;
+//  I2C_DevStructure.CPAL_ProgModel = CPAL_PROGMODEL_DMA;
+//#elif defined (CPAL_I2C_IT_PROGMODEL)
+//  I2C_DevStructure.wCPAL_Options =  CPAL_OPT_NO_MEM_ADDR;
+//  I2C_DevStructure.CPAL_ProgModel = CPAL_PROGMODEL_INTERRUPT;
+//#else
+// #error "Please select one of the programming model (in main.h)"
+//#endif
+//  
+//  I2C_DevStructure.pCPAL_I2C_Struct->I2C_ClockSpeed = I2C_SPEED;
+//  I2C_DevStructure.pCPAL_I2C_Struct->I2C_OwnAddress1 = OWN_ADDRESS;
+//  ///I2C_DevStructure.pCPAL_TransferRx = &sRxStructure;
+//  //I2C_DevStructure.pCPAL_TransferTx = &sTxStructure;
+//  
+//  /* Initialize CPAL device with the selected parameters */
+//  CPAL_I2C_Init(&I2C_DevStructure);   
+//}
 
 

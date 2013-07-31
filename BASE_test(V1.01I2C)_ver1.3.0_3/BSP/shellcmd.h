@@ -39,6 +39,8 @@
 //tyh:20130530 添加串修改以太网判断时间
 #define CMD_ETH_LINK_TIME 0x16
 #define CMD_ETH_RECV_TIME 0x17
+//tyh:20130730 添加读取AI板复位次数
+#define CMD_AI_RESET_COUNT 0x18
 
 
 /*人机交互状态*/
