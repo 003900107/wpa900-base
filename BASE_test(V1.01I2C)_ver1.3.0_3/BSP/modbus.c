@@ -146,19 +146,37 @@ uint8_t process_rx_data( uint8_t *byReadBuf,uint8_t *tx_buff,uint32_t rx_size )
       {
         if((0x00==byReadBuf[4])&&(0xaa==byReadBuf[5]))	 
         {
-          DoExecute((u8)(byReadBuf[3]*2-1));
-          tx_buff[2]=byReadBuf[2];
-          tx_buff[3]=byReadBuf[3];
-          tx_buff[4]=byReadBuf[4];
-          tx_buff[5]=byReadBuf[5];
+          if( !DoExecute((u8)(byReadBuf[3]*2-1)))
+          {
+            //修改应答报文, 通知主站遥控失败  
+            tx_buff[1] |= 0x80;
+            tx_buff[2] = SLAVE_DEVICE_FAILURE;
+            uiTxLen =3;            
+          }
+          else
+          {
+            tx_buff[2]=byReadBuf[2];
+            tx_buff[3]=byReadBuf[3];
+            tx_buff[4]=byReadBuf[4];
+            tx_buff[5]=byReadBuf[5];
+          }
         }
         else if((0x00==byReadBuf[4])&&(0xcc==byReadBuf[5]))
         {
-          DoExecute((u8)(byReadBuf[3]*2));
-          tx_buff[2]=byReadBuf[2];
-          tx_buff[3]=byReadBuf[3];
-          tx_buff[4]=byReadBuf[4];
-          tx_buff[5]=byReadBuf[5];
+          if( !DoExecute((u8)(byReadBuf[3]*2)) )
+          {
+            //修改应答报文, 通知主站遥控失败 
+            tx_buff[1] |= 0x80;
+            tx_buff[2] = SLAVE_DEVICE_FAILURE;
+            uiTxLen =3;            
+          }
+          else
+          {
+            tx_buff[2]=byReadBuf[2];
+            tx_buff[3]=byReadBuf[3];
+            tx_buff[4]=byReadBuf[4];
+            tx_buff[5]=byReadBuf[5];
+          }
         }	 
         else
         {

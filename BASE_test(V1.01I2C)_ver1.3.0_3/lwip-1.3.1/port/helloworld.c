@@ -28,7 +28,7 @@
 /* Private typedef ¨ˆ¨ˆ¨ˆ¨ˆ¨ˆ¨Ž¡î¡ï¡ð¡ñ¡ó¡ô¡õ¡ö¡÷¡ø¡í¡ì¡ù¡ú¡û¡ü¡ý--------------------------------------------------------*/
 
 /* Private define ------------------------------------------------------------*/
-
+//#define _SHELL_DEBUG
 
 const char VENDORGREETING[] = {"\r\n"\
   "  _____ _______ __  __ ____ ___  ______ __  ___\r\n"\
@@ -181,11 +181,14 @@ static err_t HelloWorld_recv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err
         name->bytes[name->length-1] = '\n';
       }
       //   tcp_write(pcb, HELLO, strlen(HELLO), 1);
+    
       
       //tcp_write(pcb, name->bytes, name->length, TCP_WRITE_FLAG_COPY);
       if(NULL != Outputstr)
       {
         isCom = 0;
+        
+#ifndef _SHELL_DEBUG          
         switch(Shell_State)
         {
         case INIT:
@@ -252,11 +255,15 @@ static err_t HelloWorld_recv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err
 	//  if(0==strncmp(name->bytes,"measure",strlen("measure"))) 
 	//  {
 	//  charsum=CmdShowMea(Outputstr);
+      
         if(charsum)
 	  tcp_write(pcb, Outputstr, charsum, TCP_WRITE_FLAG_COPY);
         //  }
         else
 	  tcp_write(pcb, CHARSUMIS0, strlen(CHARSUMIS0), 1);
+#else
+        tcp_write(pcb, CHARSUMIS0, strlen(CHARSUMIS0), 1);
+#endif
         
         name->length = 0;
         memset(Outputstr,0,1314);

@@ -91,9 +91,12 @@ void DoSelect(unsigned char DoSeq)
   //	i2c_buffer_write();
 }
 
-void DoExecute(unsigned char DoSeq)
+bool DoExecute(unsigned char DoSeq)
 {
-  if((DoSeq!=0)&&(DoSeq<9))
+  bool result = Error;
+  __IO uint32_t Timeout;
+  
+  if( (DoSeq!=0)&&(DoSeq<9) )
   {
     TxBuffer[0]=0xA5;
     TxBuffer[1]=0x5A;
@@ -104,19 +107,41 @@ void DoExecute(unsigned char DoSeq)
     TxBuffer[6]=0x00;
     TxBuffer[7]=0x00;
     
-    if(BinSemPend(I2C_BUSYHOLDING_FLAG))
-    {
-      I2C_Master_BufferWrite(TxBuffer,8,DO);
-      BinSemPost(I2C_BUSYHOLDING_FLAG);
+    /*tyh:20130801  去除所有相关 BinSemPend() BinSemPost()函数
+                   改为由总线状态判断是否发送数据    */
+    //if(BinSemPend(I2C_BUSYHOLDING_FLAG))
+    if( Check_i2c_State() )     //遥控必须优先执行，如果发现总线状态不对，
+    {                           //首先复位I2C，然后再次尝试执行遥控命令
+      I2CHW_Reset();            
     }
-  }	
+    
+    if(!Check_i2c_State())
+    {
+      result = I2C_Master_BufferWrite(TxBuffer, 8, DO);
+      /*TYH: 添加出错处理 20130831*/
+      if(result != Success)
+      {
+        //tyh 20130801  当发送失败后, 发送停止位，用以通知其他从板数据交互过程结束
+        I2C_GenerateSTOP(I2C1, ENABLE);
+        I2C_GenerateSTART(I2C1, ENABLE);
+        
+        //复位I2C器件
+        I2CHW_Reset();
+      } 
+      
+      //BinSemPost(I2C_BUSYHOLDING_FLAG);
+    }
+    else
+      result = Error;
+  }
+  
+  return result;
 }
 
 bool Calibration(void)
 {
   u8 Wstatus=0;
-  
-  
+   
   memset(RxBuffer,0,8);
   TxBuffer[0]=0xA5;
   TxBuffer[1]=0x5A;
@@ -127,17 +152,31 @@ bool Calibration(void)
   TxBuffer[6]=0x00;
   TxBuffer[7]=0x00;
   
-  if(BinSemPend(I2C_BUSYHOLDING_FLAG))
+  //tyh:20130801  去除所有相关 BinSemPend() BinSemPost()函数
+  //              改为由总线状态判断是否发送数据     
+  //if(BinSemPend(I2C_BUSYHOLDING_FLAG))
+  if(!Check_i2c_State())
   {
-    Wstatus=I2C_Master_BufferWrite(TxBuffer,8,AIN);
-    BinSemPost(I2C_BUSYHOLDING_FLAG);
+    Wstatus = I2C_Master_BufferWrite(TxBuffer,8,AIN);
+    /*TYH: 添加出错处理 20130831*/
+    if(Wstatus != Success)
+    {
+      //tyh 20130801  当发送失败后, 发送停止位，用以通知其他从板数据交互过程结束
+      I2C_GenerateSTOP(I2C1, ENABLE);
+      I2C_GenerateSTART(I2C1, ENABLE);
+      
+      //复位I2C器件
+      I2CHW_Reset();  
+    }    
+    //BinSemPost(I2C_BUSYHOLDING_FLAG);
   }
+  
   if(Wstatus)
   {
     return 1;
   }
-  return 0;
   
+  return 0;
 }
 
 bool Time_Calib(void)
@@ -150,36 +189,63 @@ bool Time_Calib(void)
   TxBuffer[1]=0x5A;
   TxBuffer[2]=AI_TIME;
   TxBuffer[3]=AI_TIME;
+  
   tempcounter = (time_t)RTC_GetCounter();
   memcpy((u8*)(&tempcounter),&TxBuffer[4],4); 
   
-  if(BinSemPend(I2C_BUSYHOLDING_FLAG))
+  //tyh:20130801  去除所有相关 BinSemPend() BinSemPost()函数
+  //              改为由总线状态判断是否发送数据   
+  //if(BinSemPend(I2C_BUSYHOLDING_FLAG))
+  if(!Check_i2c_State())
   {
-    Wstatus=I2C_Master_BufferWrite(TxBuffer,8,AIN);
-    BinSemPost(I2C_BUSYHOLDING_FLAG);
+    Wstatus = I2C_Master_BufferWrite(TxBuffer,8,AIN);
+    /*TYH: 添加出错处理 20130831*/
+    if(Wstatus != Success)
+    {
+      //tyh 20130801  当发送失败后, 发送停止位，用以通知其他从板数据交互过程结束
+      I2C_GenerateSTOP(I2C1, ENABLE);
+      I2C_GenerateSTART(I2C1, ENABLE);
+      
+      //复位I2C器件
+      I2CHW_Reset();        
+    }      
+    //BinSemPost(I2C_BUSYHOLDING_FLAG);
   }
+  
   if(Wstatus)
   {
     return 1;
   }
-  return 0;
   
+  return 0;
 }
 
 bool AiQuerry(void)
 {
-  bool result;
+  bool result = Error;
+  static uint8_t error_count = 0;   //i2c 测量请求错误计数器
   
   u8 othello_cnt4i2cerr = 0;
-  memset(RxBuffer,0,127);
   
-  if(BinSemPend(I2C_BUSYHOLDING_FLAG))
+  memset(RxBuffer, 0, 127);
+  
+  //tyh:20130801  去除所有相关 BinSemPend() BinSemPost()函数
+  //              改为由总线状态判断是否发送数据
+  //if( BinSemPend(I2C_BUSYHOLDING_FLAG) )
+  if(!Check_i2c_State())    //如果总线状态不为忙，就启动数据请求
   {
+    if( (error_count>7)&&(error_count%7) )    //当请求7次AI数据不成功时，降低请求频率
+    {                                         //改为7个周期请求一次，只要请求一旦成功，恢复正常频率
+      error_count++;
+      result = Error;
+      
+      return result;
+    }  
+    
 #if MEAUPDATE_METHOD==SINGLEBYTE
     result=I2C_Master_BufferRead(RxBuffer,8,AIN);
-#endif
-#if MEAUPDATE_METHOD==MEMBLKCP
-    result=I2C_Master_BufferRead(RxBuffer,/*98*/102,AIN);  //tyh20130730
+#elif MEAUPDATE_METHOD==MEMBLKCP
+    result=I2C_Master_BufferRead(RxBuffer,/*98*/102,AIN);  //tyh20130730 添加AI板复位次数的传输
 #endif
     
     /*TYH: 添加出错处理 20120928*/
@@ -191,16 +257,25 @@ bool AiQuerry(void)
         othello_cnt4i2cerr++;
       }
       
+      error_count++;
+      
+      //tyh 20130801  当发送失败后, 发送停止位，用以通知其他从板数据交互过程结束
+      I2C_GenerateSTOP(I2C1, ENABLE);
+      I2C_GenerateSTART(I2C1, ENABLE);       
+      
+      //请求出错, 复位I2C设备
       I2CHW_Reset();
     } 
     else
     {
-      othello_cnt4i2cerr=0;	
+      othello_cnt4i2cerr=0;
+      error_count = 0;
     }
-    BinSemPost(I2C_BUSYHOLDING_FLAG);
-    return result;
+    
+    //BinSemPost(I2C_BUSYHOLDING_FLAG);
   }
-  return 0;
+  
+  return result;
 }
 
 bool AiCoefSet(uint8_t AiSeq,uint32_t coef)
@@ -218,11 +293,26 @@ bool AiCoefSet(uint8_t AiSeq,uint32_t coef)
   TxBuffer[7]=0x00;
   
   // status=i2c_buffer_write();
-  if(BinSemPend(I2C_BUSYHOLDING_FLAG))
+  
+  //tyh:20130801  去除所有相关 BinSemPend() BinSemPost()函数
+  //              改为由总线状态判断是否发送数据     
+  //if(BinSemPend(I2C_BUSYHOLDING_FLAG))
+  if(!Check_i2c_State())    //如果总线状态不为忙，就启动数据请求  
   {
-    Wstatus=I2C_Master_BufferWrite(TxBuffer,8,AIN);
-    BinSemPost(I2C_BUSYHOLDING_FLAG);
+    Wstatus = I2C_Master_BufferWrite(TxBuffer,8,AIN);
+    /*TYH: 添加出错处理 20130831*/
+    if(Wstatus != Success)
+    {     
+      //tyh 20130801  当发送失败后, 发送停止位，用以通知其他从板数据交互过程结束
+      I2C_GenerateSTOP(I2C1, ENABLE);
+      I2C_GenerateSTART(I2C1, ENABLE);
+      
+      //复位I2C器件
+      I2CHW_Reset();        
+    }      
+    //BinSemPost(I2C_BUSYHOLDING_FLAG);
   }
+  
   if(Wstatus)
   {
     /* while(timeout--);
@@ -236,9 +326,10 @@ bool AiCoefSet(uint8_t AiSeq,uint32_t coef)
     return 1;
     
   }
-  return 0;
   
+  return 0;
 }
+
 #if MEAUPDATE_METHOD==SINGLEBYTE
 void AiProcess(unsigned char AiSeq)
 {  	
@@ -248,11 +339,9 @@ void AiProcess(unsigned char AiSeq)
     Burst_Measure[AiSeq]=0x01;
   MeaRecording[AiSeq]=	I2C_MeasureTab[AiSeq];
   // I2C_MeasureTab[AiSeq]= (float*)(&RxBuffer[4]);
-  
-  
-  
 }
 #endif
+
 #if MEAUPDATE_METHOD==MEMBLKCP
 void AiProcess(unsigned char *pDatacopied)
 {
@@ -261,6 +350,7 @@ void AiProcess(unsigned char *pDatacopied)
   memcpy(&AI_Reset_Count, pDatacopied+92, 4);
 }
 #endif 
+
 /*
 遥测量上传报文控制字
 bit7 bit6 bit5	bit4~bit0
@@ -301,10 +391,12 @@ void Deal_I2CComming(void)
 bool BinSemPend(uint8_t Sem)
 {
   uint32_t wait;
-  for(wait=TOLERER;Sem;wait--)
+  for(wait=TOLERER; Sem; wait--)
   {
-    if(0==wait) return 0;
+    if(0==wait) 
+      return 0;
   }
+  
   Sem=0x01;
   return 1;
 }
@@ -315,7 +407,7 @@ void BinSemPost(uint8_t Sem)
 
 void I2CHW_Maintain(void)
 {
-  __IO uint32_t temp = 0;
+  //__IO uint32_t temp = 0;
   
   if (1==I2C_BUSYHOLDING_FLAG)
   {
@@ -323,8 +415,9 @@ void I2CHW_Maintain(void)
   } 
   else
   {
-    temp=I2C1->SR2;
-    if(temp&0x0002)
+    //temp=I2C1->SR2;
+    //if(temp&0x0002)   
+    if(Check_i2c_State())   //i2c bus busy
     {
       BusBusyCounter++;
       GPIO_WriteBit(ALARM_LED,  Bit_RESET);
@@ -338,12 +431,12 @@ void I2CHW_Maintain(void)
     }
   }
   
-  if(BusBusyCounter>0x08)
+  if(BusBusyCounter > 0x07) //10s
   {
     I2C_Cmd(I2C1,DISABLE);
     I2C_Cmd(I2C1,ENABLE);
     
-    I2CHW_Reset();
+    I2CHW_Reset();   
     BusBusyCounter=0;
     //NVIC_SystemReset();
   }

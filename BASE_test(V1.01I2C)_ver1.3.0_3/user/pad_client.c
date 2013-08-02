@@ -108,7 +108,7 @@ uint32_t Pad_process_rx_data( uint8_t *byReadBuf,uint8_t *tx_buff,uint32_t rx_si
   
   if(byReadBuf[1]=='m'&&byReadBuf[2]=='e'&&byReadBuf[3]=='a')
   {
-    result=AiQuerry();
+    result = AiQuerry();
     if(result)
     {
       sprintf(p,"@celiangshuju:");
@@ -139,6 +139,7 @@ uint32_t Pad_process_rx_data( uint8_t *byReadBuf,uint8_t *tx_buff,uint32_t rx_si
   }
   else if(byReadBuf[1]=='d'&&byReadBuf[2]=='o')
   {
+    //tyh 20130802  此处需添加I2C出错后，通知其他从板
     if((byReadBuf[3]>0x30)&&(byReadBuf[3]<0x40))
       DoExecute(byReadBuf[3]-0x30);
   }

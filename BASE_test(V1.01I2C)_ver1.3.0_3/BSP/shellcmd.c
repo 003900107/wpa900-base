@@ -545,7 +545,7 @@ uint32_t CmdShowData(char *outputstr,T_MESSAGE *message)
   {
   case CMD_AI:  
 #if MEAUPDATE_METHOD==MEMBLKCP
-    status=AiQuerry();
+    status = AiQuerry();
     if(status)
     {
       I2C_MeasureTab[23]=GetTemperature();
@@ -1129,22 +1129,30 @@ uint32_t CmdQNA(char *outputstr,T_MESSAGE *message)
 uint32_t CmdPwdAsserted(char *outputstr,T_MESSAGE *message)
 {
   char *p;
-  p=outputstr;
-  uint16_t bak_dr = 0;  
+  uint16_t bak_dr = 0;
+  
+  p=outputstr;  
   
   switch(message->m_type)
   {
   case CMD_DO:
-    DoExecute((unsigned char)(message->m_intdata[0]));
-    
+    if( DoExecute((unsigned char)(message->m_intdata[0])) )  //执行成功
+    {
 #if LINGUA == EN  
-    sprintf(outputstr,"DO Executed!Please Check the Di Change\r\n");
-    p+=strlen("DO Executed!Please Check the Di Change\r\n");
+      sprintf(outputstr,"DO Executed!Please Check the Di Change\r\n");
+      p+=strlen("DO Executed!Please Check the Di Change\r\n");
 #endif
+      
 #if LINGUA == CH  
-    sprintf(outputstr,"遥控已操作，请查看遥信状态\r\n");
-    p+=strlen("遥控已操作，请查看遥信状态\r\n");
+      sprintf(outputstr,"遥控已操作，请查看遥信状态\r\n");
+      p+=strlen("遥控已操作，请查看遥信状态\r\n");
 #endif
+    }
+    else
+    {     
+      sprintf(outputstr,"总线状态异常，遥控执行失败！\r\n");
+      p+=strlen("总线状态异常，遥控执行失败！\r\n");      
+    }
     
     Shell_State=INIT;
     message->m_type=CMD_NULL;

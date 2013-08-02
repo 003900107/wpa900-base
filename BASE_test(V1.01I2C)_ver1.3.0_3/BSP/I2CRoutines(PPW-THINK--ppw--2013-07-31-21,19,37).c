@@ -69,8 +69,6 @@ void I2CDMA_Set(uint8_t* pBuffer,uint32_t BufferSize, uint8_t Direction)
     DMA_Cmd(DMA1_Channel7, ENABLE);
   } 
 }
-
-
 Status I2C_Master_BufferRead(uint8_t* pBuffer,  uint32_t NumByteToRead, uint8_t SlaveAddress)
 {
   __IO uint32_t temp = 0;
@@ -89,7 +87,6 @@ Status I2C_Master_BufferRead(uint8_t* pBuffer,  uint32_t NumByteToRead, uint8_t 
     I2C1->CR2 |= CR2_DMAEN_Set;
     /* Send START condition */
     I2C1->CR1 |= CR1_START_Set;
-    
     /* Wait until SB flag is set: EV5  */
     Timeout = 0xFFFF;
     while ((I2C1->SR1&0x0001) != 0x0001)
@@ -97,7 +94,7 @@ Status I2C_Master_BufferRead(uint8_t* pBuffer,  uint32_t NumByteToRead, uint8_t 
       if (Timeout-- == 0)
         return Error;
     }
-
+    Timeout = 0xFFFF;
     /* Send slave address */
     /* Set the address bit0 for read */
     SlaveAddress |= OAR1_ADD0_Set;
@@ -105,7 +102,6 @@ Status I2C_Master_BufferRead(uint8_t* pBuffer,  uint32_t NumByteToRead, uint8_t 
     /* Send the slave address */
     I2C1->DR = Address;
     /* Wait until ADDR is set: EV6 */
-    Timeout = 0xFFFF;
     while ((I2C1->SR1&0x0002) != 0x0002)
     {
       if (Timeout-- == 0)
@@ -113,21 +109,18 @@ Status I2C_Master_BufferRead(uint8_t* pBuffer,  uint32_t NumByteToRead, uint8_t 
     }
     /* Clear ADDR flag by reading SR2 register */
     temp = I2C1->SR2;
-    
-    Timeout = 0xFFFFFFFF;
+    //	Timeout = 0xFFFF;
     while (!DMA_GetFlagStatus(DMA1_FLAG_TC7));
-    {
-      if (Timeout-- == 0)
-        return Error;
-    }
-    
+    // {
+    // if (Timeout-- == 0)
+    //     return Error;
+    // }
     DMA_Cmd(DMA1_Channel7, DISABLE);
     
     DMA_ClearFlag(DMA1_FLAG_TC7);
     
     /* Program the STOP */
     I2C1->CR1 |= CR1_STOP_Set;
-    
     /* Make sure that the STOP bit is cleared by Hardware before CR1 write access */
     Timeout = 0xFFFF;
     while ((I2C1->CR1&0x200) == 0x200);
@@ -135,41 +128,36 @@ Status I2C_Master_BufferRead(uint8_t* pBuffer,  uint32_t NumByteToRead, uint8_t 
       if (Timeout-- == 0)
         return Error;
     }
-    
     Deal_I2CComming();
   }
 #endif
   
 #if I2C_METHOD == POLLING /* I2C1 Master Reception using Polling */
   { 
+    Timeout = 0xFFFF;
     /* Send START condition */
     I2C1->CR1 |= CR1_START_Set;
-    
     /* Wait until SB flag is set: EV5 */
-    Timeout = 0xFFFF;
     while ((I2C1->SR1&0x0001) != 0x0001)
     {
       if (Timeout-- == 0)
         return Error;
     }
-
+    Timeout = 0xFFFF;
     /* Send slave address */
     /* Reset the address bit0 for write */
-    SlaveAddress |= OAR1_ADD0_Set;
+    SlaveAddress |= OAR1_ADD0_Set;;
     Address = SlaveAddress;
     /* Send the slave address */
     I2C1->DR = Address;
     /* Wait until ADDR is set: EV6 */
-    Timeout = 0xFFFF;    
     while ((I2C1->SR1&0x0002) != 0x0002)
     {
       if (Timeout-- == 0)
         return Error;
     }
-    
     /* Clear ADDR by reading SR2 status register */
     temp = I2C1->SR2;
-    
     /* While there is data to be read */
     while (NumByteToRead)
     {
@@ -184,7 +172,6 @@ Status I2C_Master_BufferRead(uint8_t* pBuffer,  uint32_t NumByteToRead, uint8_t 
           if (Timeout-- == 0)
             return Error;
         }
-        
         /* Read data */
         *pBuffer = I2C1->DR;
         /* */
@@ -194,19 +181,19 @@ Status I2C_Master_BufferRead(uint8_t* pBuffer,  uint32_t NumByteToRead, uint8_t 
       }
       
       /* it remains to read three data: data N-2, data N-1, Data N */
-      //还剩三字节未读时，关ACK，关中断，读n-2字节，置STOP，读n-1字节，开中断，等字节到达DR，读n字节
-      //为何不在读完倒数第二字节时候关ACK，读完所有之后stop？实践证明不提前关ACK,读完所有字节后依然会回ACK给从设备，
-      //从设备会继续产生clk，送出一个FF值字节（因为sda此时为高）  
-      if (NumByteToRead == 3)
-      {    
+      if (NumByteToRead == 3)	 
+        //还剩三字节未读时，关ACK，关中断，读n-2字节，置STOP，读n-1字节，开中断，等字节到达DR，读n字节
+        //为何不在读完倒数第二字节时候关ACK，读完所有之后stop？实践证明不提前关ACK,读完所有字节后依然会回ACK给从设备，
+        //从设备会继续产生clk，送出一个FF值字节（因为sda此时为高）
+      {
+        
         /* Wait until BTF is set: Data N-2 in DR and data N -1 in shift register */
-        Timeout-=0xFFFF;
         while ((I2C1->SR1 & 0x00004) != 0x000004)
+          Timeout-=0xFFFF;
         {
           if (Timeout-- == 0)
             return Error;
         }
-        
         /* Clear ACK */
         I2C1->CR1 &= CR1_ACK_Reset;
         
@@ -225,7 +212,6 @@ Status I2C_Master_BufferRead(uint8_t* pBuffer,  uint32_t NumByteToRead, uint8_t 
         __enable_irq();
         /* Increment */
         pBuffer++;
-        
         /* Wait until RXNE is set (DR contains the last data) */
         Timeout=0xFFFF;
         while ((I2C1->SR1 & 0x00040) != 0x000040)
@@ -233,14 +219,13 @@ Status I2C_Master_BufferRead(uint8_t* pBuffer,  uint32_t NumByteToRead, uint8_t 
           if (Timeout-- == 0)
             return Error;
         }
-        
         /* Read DataN */
         *pBuffer = I2C1->DR;
         /* Reset the number of bytes to be read by master */
         NumByteToRead = 0;
+        
       }
     }
-    
     /* Make sure that the STOP bit is cleared by Hardware before CR1 write access */
     Timeout=0xFFFF;
     while ((I2C1->CR1&0x200) == 0x200)
@@ -248,7 +233,6 @@ Status I2C_Master_BufferRead(uint8_t* pBuffer,  uint32_t NumByteToRead, uint8_t 
       if (Timeout-- == 0)
         return Error;
     }
-    
     /* Enable Acknowledgement to be ready for another reception */
     I2C1->CR1 |= CR1_ACK_Set;
     Deal_I2CComming();
@@ -260,40 +244,23 @@ Status I2C_Master_BufferRead(uint8_t* pBuffer,  uint32_t NumByteToRead, uint8_t 
   {
     /* Enable EVT IT*/
     I2C1->CR2 |= I2C_IT_EVT;
-    
     /* Enable BUF IT */
     I2C1->CR2 |= I2C_IT_BUF;
-    
     /* Set the I2C direction to reception */
     I2CDirection = I2C_DIRECTION_RX;
     SlaveAddress |= OAR1_ADD0_Set;
     Address = SlaveAddress;
     NumbOfBytes = NumByteToRead;
-    
     /* Send START condition */
     I2C1->CR1 |= CR1_START_Set;
-    
     /* Wait until the START condition is generated on the bus: START bit is cleared by hardware */
-    Timeout=0xFFFF;
-    while ((I2C1->CR1&0x100) == 0x100)
-    {
-      if (Timeout-- == 0)
-        return Error;
-    }
-    
+    while ((I2C1->CR1&0x100) == 0x100);
     /* Wait until BUSY flag is reset (until a STOP is generated) */
-    Timeout=0xFFFF;
-    while ((I2C1->SR2 &0x0002) == 0x0002)
-    {
-      if (Timeout-- == 0)
-        return Error;
-    }
-    
+    while ((I2C1->SR2 &0x0002) == 0x0002);
     /* Enable Acknowledgement to be ready for another reception */
     I2C1->CR1 |= CR1_ACK_Set;
   }
 #endif
-  
   return Success;
 }
 
@@ -317,30 +284,27 @@ Status I2C_Master_BufferWrite(uint8_t* pBuffer,  uint32_t NumByteToWrite, uint8_
   I2C1->CR2 |= I2C_IT_ERR;
 #if I2C_METHOD == DMA   /* I2C1 Master Transmission using DMA */
   {
+    Timeout = 0xFFFF;
     /* Configure the DMA channel for I2C1 transmission */
     I2CDMA_Set (pBuffer,NumByteToWrite, I2C_DIRECTION_TX);
     /* Enable the I2C1 DMA requests */
     I2C1->CR2 |= CR2_DMAEN_Set;
     /* Send START condition */
     I2C1->CR1 |= CR1_START_Set;
-    
     /* Wait until SB flag is set: EV5 */
-    Timeout = 0xFFFF;    
     while ((I2C1->SR1&0x0001) != 0x0001)
     {
       if (Timeout-- == 0)
         return Error;
     }
-
+    Timeout = 0xFFFF;
     /* Send slave address */
     /* Reset the address bit0 for write */
     SlaveAddress &= OAR1_ADD0_Reset;
     Address = SlaveAddress;
     /* Send the slave address */
     I2C1->DR = Address;
-    
     /* Wait until ADDR is set: EV6 */
-    Timeout = 0xFFFF;    
     while ((I2C1->SR1&0x0002) != 0x0002)
     {
       if (Timeout-- == 0)
@@ -349,45 +313,28 @@ Status I2C_Master_BufferWrite(uint8_t* pBuffer,  uint32_t NumByteToWrite, uint8_
     
     /* Clear ADDR flag by reading SR2 register */
     temp = I2C1->SR2;
-    
-    Timeout = 0xFFFFFFFF;  
-    while (!DMA_GetFlagStatus(DMA1_FLAG_TC6))
-    {
-      if (Timeout-- == 0)
-        return Error;      
-    }
-    
+    while (!DMA_GetFlagStatus(DMA1_FLAG_TC6));
     DMA_Cmd(DMA1_Channel6, DISABLE);
     DMA_ClearFlag(DMA1_FLAG_TC6);
     
-    /* EV8_2: Wait until BTF is set before programming the STOP */
-    Timeout = 0xFFFF;    
-    while ((I2C1->SR1 & 0x00004) != 0x000004)
-    {
-      if (Timeout-- == 0)
-        return Error;
-    }
     
+    
+    /* EV8_2: Wait until BTF is set before programming the STOP */
+    while ((I2C1->SR1 & 0x00004) != 0x000004);
     /* Program the STOP */
     I2C1->CR1 |= CR1_STOP_Set;
-    
     /* Make sure that the STOP bit is cleared by Hardware */
-    Timeout = 0xFFFF;    
-    while ((I2C1->CR1&0x200) == 0x200)
-    {
-      if (Timeout-- == 0)
-        return Error;
-    }   
+    while ((I2C1->CR1&0x200) == 0x200);
+    
   }
-#endif  
-  
+#endif    
 #if I2C_METHOD == POLLING /* I2C1 Master Transmission using Polling */
   {
+    
+    Timeout = 0xFFFF;
     /* Send START condition */
     I2C1->CR1 |= CR1_START_Set;
-    
     /* Wait until SB flag is set: EV5 */
-    Timeout = 0xFFFF;     
     while ((I2C1->SR1&0x0001) != 0x0001)
     {
       if (Timeout-- == 0)
@@ -400,9 +347,8 @@ Status I2C_Master_BufferWrite(uint8_t* pBuffer,  uint32_t NumByteToWrite, uint8_
     Address = SlaveAddress;
     /* Send the slave address */
     I2C1->DR = Address;
-
-    /* Wait until ADDR is set: EV6 */
     Timeout = 0xFFFF;
+    /* Wait until ADDR is set: EV6 */
     while ((I2C1->SR1 &0x0002) != 0x0002)
     {
       if (Timeout-- == 0)
@@ -434,7 +380,6 @@ Status I2C_Master_BufferWrite(uint8_t* pBuffer,  uint32_t NumByteToWrite, uint8_
       /* Point to the next byte to be written */
       pBuffer++;
     }
-    
     /* EV8_2: Wait until BTF is set before programming the STOP */
     Timeout = 0xFFFF;
     while ((I2C1->SR1 & 0x00004) != 0x000004)
@@ -444,7 +389,6 @@ Status I2C_Master_BufferWrite(uint8_t* pBuffer,  uint32_t NumByteToWrite, uint8_
     }
     /* Send STOP condition */
     I2C1->CR1 |= CR1_STOP_Set;
-    
     /* Make sure that the STOP bit is cleared by Hardware */
     Timeout = 0xFFFF;
     while ((I2C1->CR1&0x200) == 0x200)
@@ -455,8 +399,8 @@ Status I2C_Master_BufferWrite(uint8_t* pBuffer,  uint32_t NumByteToWrite, uint8_
     
   }
 #endif
-  
 #if I2C_METHOD == INTERRUPT /* I2C1 Master Transmission using Interrupt with highest priority in the application */
+  
   {
     /* Enable EVT IT*/
     I2C1->CR2 |= I2C_IT_EVT;
@@ -469,27 +413,15 @@ Status I2C_Master_BufferWrite(uint8_t* pBuffer,  uint32_t NumByteToWrite, uint8_
     NumbOfBytes = NumByteToRead;
     /* Send START condition */
     I2C1->CR1 |= CR1_START_Set;
-    
     /* Wait until the START condition is generated on the bus: the START bit is cleared by hardware */
-    Timeout = 0xFFFF;
-    while ((I2C1->CR1&0x100) == 0x100)
-    {
-      if (Timeout-- == 0)
-        return Error;
-    }
-    
+    while ((I2C1->CR1&0x100) == 0x100);
     /* Wait until BUSY flag is reset: a STOP has been generated on the bus signaling the end
     of transmission */
-    Timeout = 0xFFFF;
-    while ((I2C1->SR2 &0x0002) == 0x0002)
-    {
-      if (Timeout-- == 0)
-        return Error;
-    }       
+    while ((I2C1->SR2 &0x0002) == 0x0002);
   }
 #endif
-  
   return Success;
+  
 }
 
 
@@ -662,9 +594,7 @@ void _I2C1_EV_IRQHandler(void)
   if( (SR1Register != 0)&&(SR2Register != 0) )
   {
     //复位I2C
-    I2CHW_Reset();
   }
-  
 }
 
 
@@ -704,10 +634,9 @@ void _I2C1_ER_IRQHandler(void)
   }
   
   //添加异常处理 tyh 20130731
-  if(SR1Register != 0)
+  if( SR1Register != 0 )
   {
     //复位I2C
-    I2CHW_Reset();
   }
   
   return;

@@ -23,7 +23,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-#define QRY_TMR_INTERVAL 2560
+#define QRY_TMR_INTERVAL /*2560*/1280
 
 #define DiRetThreshold 10
 #define DiActThreshold 16
@@ -129,6 +129,8 @@ void Ethernet_HWRST();
 uint8_t Set_eth_reset_flag(const uint8_t flag);
 uint8_t Get_eth_reset_flag();
 uint8_t Reset_eth_recv_count();
+
+uint8_t Check_i2c_State();
 
 //tyh:20130731
 //void I2C_Configuration_cpal(void);

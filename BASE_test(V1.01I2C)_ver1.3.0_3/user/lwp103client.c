@@ -105,18 +105,19 @@ extern DiStatus_Type DiStatus_DI[16];
 /* Private functions ---------------------------------------------------------*/
 err_t	pt103_tcp_write(struct tcp_pcb *pcb, const void *data, u16_t len, u8_t apiflags)
 {	 	
-	err_t Rstatus=1;
-	if(BinSemPend(TCP103_BUSYHOLDING_FLAG))
-		 {
-			 Rstatus=tcp_write(pcb, data, len, apiflags);
-			 BinSemPost(TCP103_BUSYHOLDING_FLAG);
-		 }
-	return Rstatus;	
+  err_t Rstatus=1;
+     
+  if(BinSemPend(TCP103_BUSYHOLDING_FLAG))
+  {
+    Rstatus=tcp_write(pcb, data, len, apiflags);
+    BinSemPost(TCP103_BUSYHOLDING_FLAG);
+  }
+  return Rstatus;	
 }
 /**
-  * @brief  Initialize the client application.
-  * @param  None
-  * @retval None
+* @brief  Initialize the client application.
+* @param  None
+* @retval None
   */
 void lw103_client_init(void)
 {

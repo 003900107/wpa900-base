@@ -20,8 +20,8 @@
 14		数目及后续状态<1>
 15	通用分类标识数据（GID）
 带相对时间的时标报文
-	见B.6.5
-	<1>=开或<2>=合
+见B.6.5
+<1>=开或<2>=合
 16，17		
 相对时间（RET）
 
@@ -45,48 +45,48 @@ extern float I2C_MeasureTab[MEANUM];
 
 u8 ANSWER_ASDU20(char *ReadBuf,char *WriteBuf)
 {
-	if(5==ReadBuf[2])
-		{
-			*WriteBuf++=ASDU5;	
-			*WriteBuf++=0x81;	
-			*WriteBuf++=0x04;	
-			*WriteBuf++=ReadBuf[3];	
-			*WriteBuf++=0xFE;
-			*WriteBuf++=0x03;
-			*WriteBuf++=0x02;
-			*WriteBuf++='W';	
-			*WriteBuf++='P';	
-			*WriteBuf++='A';	
-			*WriteBuf++='9';	
-			*WriteBuf++='0';
-			*WriteBuf++='0';
-			*WriteBuf++=' ';
-			*WriteBuf++=' ';
-			*WriteBuf++=0x30+SetCurrent.vers/10;
-			*WriteBuf++='.';
-			*WriteBuf++=0x30+SetCurrent.vers%10;
-			*WriteBuf  =0x30;
-			return 19;
-		}	
-			return 0;
+  if(5==ReadBuf[2])
+  {
+    *WriteBuf++=ASDU5;	
+    *WriteBuf++=0x81;	
+    *WriteBuf++=0x04;	
+    *WriteBuf++=ReadBuf[3];	
+    *WriteBuf++=0xFE;
+    *WriteBuf++=0x03;
+    *WriteBuf++=0x02;
+    *WriteBuf++='W';	
+    *WriteBuf++='P';	
+    *WriteBuf++='A';	
+    *WriteBuf++='9';	
+    *WriteBuf++='0';
+    *WriteBuf++='0';
+    *WriteBuf++=' ';
+    *WriteBuf++=' ';
+    *WriteBuf++=0x30+SetCurrent.vers/10;
+    *WriteBuf++='.';
+    *WriteBuf++=0x30+SetCurrent.vers%10;
+    *WriteBuf  =0x30;
+    return 19;
+  }	
+  return 0;
 }
 
 u8 ANSWER_ASDU21(char *ReadBuf,char *WriteBuf)
 {
-	if(0x81==ReadBuf[1])
-		{
-			*WriteBuf++=ASDU10;	
-			*WriteBuf++=0x81;	
-			*WriteBuf++=0x2a;	
-			*WriteBuf++=ReadBuf[3];	
-			*WriteBuf++=0xFE;
-			*WriteBuf++=0xF1;
-			*WriteBuf++=ReadBuf[6];
-			*WriteBuf++=0x00;	
-		
-			return 8;
-		}	
-			return 0;
+  if(0x81==ReadBuf[1])
+  {
+    *WriteBuf++=ASDU10;	
+    *WriteBuf++=0x81;	
+    *WriteBuf++=0x2a;	
+    *WriteBuf++=ReadBuf[3];	
+    *WriteBuf++=0xFE;
+    *WriteBuf++=0xF1;
+    *WriteBuf++=ReadBuf[6];
+    *WriteBuf++=0x00;	
+    
+    return 8;
+  }	
+  return 0;
 }
 
 #ifdef ASDU6EN
@@ -108,86 +108,86 @@ u8 ANSWER_ASDU6(char *ReadBuf,char *WriteBuf)
 #endif
 u8 ANSWER_ASDU7(char *ReadBuf,char *WriteBuf)
 {
-u8 i;
-	if((0x09==ReadBuf[2])&&(0x01==ReadBuf[3])&&(254==ReadBuf[4])&&(0==ReadBuf[5]))
-		{
-			*WriteBuf++=ASDU10;	
-			*WriteBuf++=0x81;	
-			*WriteBuf++=0x09;	
-			*WriteBuf++=ReadBuf[3];	
-			*WriteBuf++=0xFE;
-			*WriteBuf++=0xF1;
-			*WriteBuf++=ReadBuf[6];
-			*WriteBuf++=0x10;
-			for(i=1;i<17;i++)
-			{
-			*WriteBuf++=0x08;
-			*WriteBuf++=i;
-			*WriteBuf++=0x01;	
-			*WriteBuf++=0x09;	
-			*WriteBuf++=0x01;	
-			*WriteBuf++=0x01;	
-			*WriteBuf++=DiStatus_DI[i-1].Value+1;
-		  }
-		  
-		return 120;
-		}	
-			return 0;
+  u8 i;
+  if((0x09==ReadBuf[2])&&(0x01==ReadBuf[3])&&(254==ReadBuf[4])&&(0==ReadBuf[5]))
+  {
+    *WriteBuf++=ASDU10;	
+    *WriteBuf++=0x81;	
+    *WriteBuf++=0x09;	
+    *WriteBuf++=ReadBuf[3];	
+    *WriteBuf++=0xFE;
+    *WriteBuf++=0xF1;
+    *WriteBuf++=ReadBuf[6];
+    *WriteBuf++=0x10;
+    for(i=1;i<17;i++)
+    {
+      *WriteBuf++=0x08;
+      *WriteBuf++=i;
+      *WriteBuf++=0x01;	
+      *WriteBuf++=0x09;	
+      *WriteBuf++=0x01;	
+      *WriteBuf++=0x01;	
+      *WriteBuf++=DiStatus_DI[i-1].Value+1;
+    }
+    
+    return 120;
+  }	
+  return 0;
 }
 
 u8 ANSWER_ASDU10(char *ReadBuf,char *WriteBuf)
 {
-	if((0x81==ReadBuf[1])&&(0x28==ReadBuf[2])&&(0x01==ReadBuf[3]))
-		{
-				if(0xF9==ReadBuf[5])//假返校
-					{
-						*WriteBuf++=ASDU10;
-						*WriteBuf++=0x81;
-						*WriteBuf++=0x2C;
-						*WriteBuf++=0x01;
-						*WriteBuf++=0xFE;
-						*WriteBuf++=0xF9;
-						*WriteBuf++=ReadBuf[6];
-						*WriteBuf++=ReadBuf[7];
-						*WriteBuf++=ReadBuf[8];
-						*WriteBuf++=ReadBuf[9];
-						*WriteBuf++=ReadBuf[10];
-						*WriteBuf++=ReadBuf[11];
-						*WriteBuf++=ReadBuf[12];
-						*WriteBuf++=ReadBuf[13];
-						*WriteBuf++=ReadBuf[14];
-						return 15;
-					}
-				else if(0xFA==ReadBuf[5])	
-					{
-					if(0x0B==ReadBuf[8])
-							{
-								if(0x02==ReadBuf[14])
-							  DoExecute((unsigned char)(ReadBuf[9]*2));
-							  if(0x01==ReadBuf[14])
-							  DoExecute((unsigned char)(ReadBuf[9]*2-1));
-							  
-						*WriteBuf++=ASDU10;
-						*WriteBuf++=0x81;
-						*WriteBuf++=0x2C;
-						*WriteBuf++=0x01;
-						*WriteBuf++=0xFE;
-						*WriteBuf++=0xFA;
-						*WriteBuf++=ReadBuf[6];
-						*WriteBuf++=ReadBuf[7];
-						*WriteBuf++=ReadBuf[8];
-						*WriteBuf++=ReadBuf[9];
-						*WriteBuf++=ReadBuf[10];
-						*WriteBuf++=ReadBuf[11];
-						*WriteBuf++=ReadBuf[12];
-						*WriteBuf++=ReadBuf[13];
-						*WriteBuf++=ReadBuf[14];
-						return 15;
-							}		
-						
-					}
-		}
-		else return 0;
-	
+  if((0x81==ReadBuf[1])&&(0x28==ReadBuf[2])&&(0x01==ReadBuf[3]))
+  {
+    if(0xF9==ReadBuf[5])//假返校
+    {
+      *WriteBuf++=ASDU10;
+      *WriteBuf++=0x81;
+      *WriteBuf++=0x2C;
+      *WriteBuf++=0x01;
+      *WriteBuf++=0xFE;
+      *WriteBuf++=0xF9;
+      *WriteBuf++=ReadBuf[6];
+      *WriteBuf++=ReadBuf[7];
+      *WriteBuf++=ReadBuf[8];
+      *WriteBuf++=ReadBuf[9];
+      *WriteBuf++=ReadBuf[10];
+      *WriteBuf++=ReadBuf[11];
+      *WriteBuf++=ReadBuf[12];
+      *WriteBuf++=ReadBuf[13];
+      *WriteBuf++=ReadBuf[14];
+      return 15;
+    }
+    else if(0xFA==ReadBuf[5])	
+    {
+      if(0x0B==ReadBuf[8])
+      {
+        //tyh 20130802  此处需添加I2C出错后，通知其他从板
+        if(0x02==ReadBuf[14])
+          DoExecute((unsigned char)(ReadBuf[9]*2));
+        if(0x01==ReadBuf[14])
+          DoExecute((unsigned char)(ReadBuf[9]*2-1));
+        
+        *WriteBuf++=ASDU10;
+        *WriteBuf++=0x81;
+        *WriteBuf++=0x2C;
+        *WriteBuf++=0x01;
+        *WriteBuf++=0xFE;
+        *WriteBuf++=0xFA;
+        *WriteBuf++=ReadBuf[6];
+        *WriteBuf++=ReadBuf[7];
+        *WriteBuf++=ReadBuf[8];
+        *WriteBuf++=ReadBuf[9];
+        *WriteBuf++=ReadBuf[10];
+        *WriteBuf++=ReadBuf[11];
+        *WriteBuf++=ReadBuf[12];
+        *WriteBuf++=ReadBuf[13];
+        *WriteBuf++=ReadBuf[14];
+        return 15;
+      }		
+      
+    }
+  }
+  else return 0;
+  
 }
-	

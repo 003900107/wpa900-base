@@ -34,7 +34,7 @@
 #define CR1_PE_Reset            ((uint16_t)0xFFFE)
 
 void _I2C1_EV_IRQHandler(void);
-void DoExecute(unsigned char DoSeq);
+bool DoExecute(unsigned char DoSeq);
 void DoSelect(unsigned char DoSeq);
 #if MEAUPDATE_METHOD==SINGLEBYTE
 void AiProcess(unsigned char AiSeq);
@@ -52,6 +52,7 @@ uint8_t i2c_buffer_write(void);
 void Deal_I2CComming(void);
 bool BinSemPend(uint8_t Sem);
 void BinSemPost(uint8_t Sem);
+
 void I2CHW_Maintain(void);
 
 #endif

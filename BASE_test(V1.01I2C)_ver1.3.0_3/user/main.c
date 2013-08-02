@@ -30,6 +30,9 @@ __IO uint8_t Msec_Value=0;
 FlagStatus status;
 uint8_t reset_flag = 0;
 
+/* Private define ------------------------------------------------------------*/
+#define _TEST  //test, di_1 open
+
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -50,10 +53,10 @@ void Task_Periodic_Handle(__IO uint32_t localtime)
     //  #endif
     
     I2CHW_Maintain();
+    
     if(RunStatturn++&0x01)
     {
       GPIO_WriteBit(RUNSTAT_LED,  Bit_RESET);
-      
     }
     else
     {
@@ -68,6 +71,7 @@ void Task_Periodic_Handle(__IO uint32_t localtime)
     else
       Can_Online=0x00;
   }
+  
 #ifdef PT103EN
   if((localtime - P103Timer) >= 5000)
   {
@@ -76,6 +80,7 @@ void Task_Periodic_Handle(__IO uint32_t localtime)
   }
 #endif
 }
+
 int main(void)
 {
   /*!< At this stage the microcontroller clock setting is already configured, 
@@ -241,7 +246,10 @@ int main(void)
   
   
   //启动完成, 进入常规流程
+#ifdef _TEST  
   uint8_t test = 0;
+#endif
+  
   while (1)
   {
     Di_PostWork();
@@ -257,7 +265,8 @@ int main(void)
       Ethernet_SWRST();
     else if(reset_flag == Ethernet_HWRST_FLAG)
       Ethernet_HWRST();
-    
+
+#ifdef _TEST
     //tyh:20130407 eth reset test
     if((DiStatus_DI[1].Value != test)&&(DiStatus_DI[1].Value == 1))
     {
@@ -265,7 +274,8 @@ int main(void)
       Ethernet_HWRST();
     }
     test = DiStatus_DI[1].Value;
-
+#endif
+    
 //    else
 //    {
 //      if( EthLinkCheck() )

@@ -904,16 +904,19 @@ void GPIO_DealInputData(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin,uint8_t pos)
 void Di_PostWork(void)
 {
   uint8_t i;
+  
 #ifdef SPECIALDITRIP
   for(i=0;i<NonElectro_Nbr;i++)
   {		 
     if(1==DiStatus_DI[NonElectr_TripDi[i]-1].Value)
     {
       if(Trip_turnned[i]==0)
-      {
-        DoExecute(NonElectr_TripMap[i]);
-        //printlog("input%d occur",i-7);
-        Trip_turnned[i]=1;
+      {      
+        if( DoExecute(NonElectr_TripMap[i]))
+        {          
+          //printlog("input%d occur",i-7);
+          turnned[i]=1;
+        }        
       }		  
     }
     else
@@ -941,6 +944,7 @@ void Di_PostWork(void)
     }
   }
 #endif
+  
 #ifdef FRONTDITRIP
   for(i=0;i<NonElectro_Nbr;i++)
   {
@@ -948,9 +952,11 @@ void Di_PostWork(void)
     {
       if(turnned[i]==0)
       {
-        DoExecute(NonElectr_TripMap[i]);
-        //printlog("input%d occur",i-7);
-        turnned[i]=1;
+        if( DoExecute(NonElectr_TripMap[i]))
+        {          
+          //printlog("input%d occur",i-7);
+          turnned[i]=1;
+        }
       }		  
     }
     else
@@ -978,6 +984,7 @@ void Di_PostWork(void)
     }
   }
 #endif
+  
 #ifdef REARDITRIP
   for(i=16-NonElectro_Nbr;i<16;i++)
   {
@@ -985,9 +992,11 @@ void Di_PostWork(void)
     {
       if(turnned[i]==0)
       {
-        DoExecute(NonElectr_TripMap[i]);
-        //printlog("input%d occur",i-7);
-        turnned[i]=1;
+        if( DoExecute(NonElectr_TripMap[i]) )
+        {
+          //printlog("input%d occur",i-7);
+          turnned[i]=1;
+        }
       }		  
     }
     else
@@ -1087,7 +1096,7 @@ void WDGFeeding(void)
 
 void I2CHW_Reset(void)
 {
-  __IO uint16_t Timeout;
+  __IO uint32_t Timeout;
   uint8_t i;
   GPIO_InitTypeDef GPIO_InitStructure; 
   
@@ -1455,6 +1464,29 @@ uint8_t Reset_eth_recv_count()
   
   return 1;
 }
+
+
+uint8_t Check_i2c_State()
+{
+  uint8_t result = 0;
+  
+  if(I2C1->SR2 & 0x0002)
+    result = 1;
+    
+  return result;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //void I2C_Configuration_cpal(void)
