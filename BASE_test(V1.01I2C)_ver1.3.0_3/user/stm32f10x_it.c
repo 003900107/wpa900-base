@@ -246,7 +246,9 @@ void ETH_IRQHandler(void)
   /* Handles all the received frames */
   while(ETH_GetRxPktSize() != 0) 
   {	
-    Reset_eth_recv_count();
+    Reset_eth_recv_count();   //复归以太网接收数据判断寄存器
+    Set_eth_recv_flag(1);   //设置以太网接收标志位
+    
     LwIP_Pkt_Handle();
   }
   

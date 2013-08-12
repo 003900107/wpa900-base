@@ -41,6 +41,8 @@
 #define CMD_ETH_RECV_TIME 0x17
 //tyh:20130730 添加读取AI板复位次数
 #define CMD_AI_RESET_COUNT 0x18
+#define CMD_NET_REG        0x19
+#define CMD_LOG            0x1A
 
 
 /*人机交互状态*/

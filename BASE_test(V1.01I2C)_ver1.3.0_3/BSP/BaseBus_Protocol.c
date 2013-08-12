@@ -36,6 +36,7 @@
 #define TOLERER 0x1fff
 #define I2C_PollingWait 0xfff
 
+#define I2C_SWRST_COUNT   7  //i2c软件复位最大次数  tyh:20130806
 
 uint8_t Compress_Factor=10;
 unsigned char TxBuffer[8];
@@ -407,7 +408,7 @@ void BinSemPost(uint8_t Sem)
 
 void I2CHW_Maintain(void)
 {
-  //__IO uint32_t temp = 0;
+  static uint8_t i2c_rst_cnt = 0;
   
   if (1==I2C_BUSYHOLDING_FLAG)
   {
@@ -431,15 +432,24 @@ void I2CHW_Maintain(void)
     }
   }
   
-  if(BusBusyCounter > 0x07) //10s
+  if(i2c_rst_cnt > I2C_SWRST_COUNT)
   {
+    ResetCpu(I2C_RESET);
+    return;
+  }
+  
+  if(BusBusyCounter > 0x07) //10s
+  { 
     I2C_Cmd(I2C1,DISABLE);
     I2C_Cmd(I2C1,ENABLE);
     
-    I2CHW_Reset();   
+    I2CHW_Reset();
+    i2c_rst_cnt++;
+    
     BusBusyCounter=0;
-    //NVIC_SystemReset();
   }
+  
+  return;
 } 
 
 /*------------------------------End of File------------------------------------------*/

@@ -198,7 +198,8 @@ uint8_t process_rx_data( uint8_t *byReadBuf,uint8_t *tx_buff,uint32_t rx_size )
       tx_buff[2] = ILLEGAL_DATA_ADDRESS;
       uiTxLen = 3;
     }
-    MODBUS_Send(tx_buff,uiTxLen);   	
+ 
+      MODBUS_Send(tx_buff,uiTxLen);   	
   }
   /*else if(byReadBuf[1]==TI_FUNCODE)
   {
@@ -244,7 +245,10 @@ uint8_t process_rx_data( uint8_t *byReadBuf,uint8_t *tx_buff,uint32_t rx_size )
     MODBUS_Send(tx_buff,uiTxLen);    		
   } 						
   
-  return uiTxLen+6;
+  if(byReadBuf[1] != DO_FUNCODE)
+    return uiTxLen+6;
+  else
+    return 0;
 }
 
 static void MODBUS_Send(uint8_t *pucBuf, uint8_t unLen)

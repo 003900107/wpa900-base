@@ -226,6 +226,8 @@ void udp_time_tick_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, str
   {
     pbuf_free(p);
     return;
+    
+    //result = 0;
   }
   
   if(len != /*41*/9)
@@ -244,28 +246,45 @@ void udp_time_tick_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, str
   if((RxBuffer.bytes[7]>0) && (RxBuffer.bytes[7]<13))
     t.tm_mon  =RxBuffer.bytes[7];
   else
-    result = 0;
+  {
+    //result = 0;
+    
+    if(result != 0)     //20130805 tyh:修改判断依据,任意一个时间不满足指定格就放弃对时
+      result = 0;
+  }
   
   if((RxBuffer.bytes[6]>0) && (RxBuffer.bytes[6]<32))  
     t.tm_mday =RxBuffer.bytes[6]&0x1f;
   else
-    result = 0;
+  {
+    if(result != 0)
+      result = 0;
+  }
   
   if(RxBuffer.bytes[5]<24)
     t.tm_hour =RxBuffer.bytes[5];
   else
-    result = 0;
+  {
+    if(result != 0)
+      result = 0;
+  }
   
   if(RxBuffer.bytes[4]<60)  
     t.tm_min  =RxBuffer.bytes[4];
   else
-    result = 0;
+  {
+    if(result != 0)
+      result = 0;
+  }
   
   t.tm_sec  =(RxBuffer.bytes[3]*256+RxBuffer.bytes[2])/1000;
   if(t.tm_sec > 59)
-    result = 0;
+  {
+    if(result != 0)
+      result = 0;
+  }
   
-  if(result == 0)
+  if(result == 0)   //对时格式是否符合要求
   {
     telprintf("udp Timing fault!\r\n");
   }
@@ -279,6 +298,7 @@ void udp_time_tick_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, str
   memcpy(p->payload, &DevIPAddressTab[0], 4);
   p->tot_len = p->len = 4;
   udp_sendto(upcb, p, addr, port);   
+  //udp_send(upcb, p);
   
   pbuf_free(p);
   

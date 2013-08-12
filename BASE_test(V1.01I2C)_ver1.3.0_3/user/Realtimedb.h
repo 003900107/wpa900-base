@@ -86,6 +86,11 @@ typedef struct tag_SETTING
   //tyh:20130530 添加以太网状态判断时间
   u16 eth_link_time;
   u16 eth_recv_time;
+  u16 i2c_reset;
+  //tyh:20130806 添加CPU复位的记录
+  u16 eth_recv_reset;
+  u16 eth_link_reset;
+  u16 def_reset;
 }Setting;
 
 #if STORE_METHOD == FLASH_METHOD

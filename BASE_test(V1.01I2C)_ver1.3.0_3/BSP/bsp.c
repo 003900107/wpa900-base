@@ -25,11 +25,14 @@ u16 SelectValueTab[30];
 #define ON 1
 #define OFF 0
 
-#define ETH_SWRST_COUNT 10  //软件复位最大次数
+#define ETH_SWRST_COUNT   3  //软件复位最大次数
+#define ETH_HWRST_COUNT   7  //硬件复位最大次数 tyh:20130806
+#define ETH_HWRST_NOLINK  7  //无连接,硬件复位最大次数 tyh:20130806
 
 #define LSE_READ_ERROR    ((uint32_t)0x7FFFF)  //TYH: RTC等待'LSE'超时 
 #define RCT_CLK_LSE   1   //RCT时钟为LSE
 #define RCT_CLK_HSE   2   //RCT时钟为HSE
+
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -72,6 +75,7 @@ struct tcp_pcb *ns103_pcb;
 Count_Type eth_link_count;
 Count_Type eth_recv_count;
 static uint8_t eth_reset_flag;
+static uint8_t eth_recv_flag;
 
 /* Private function prototypes -----------------------------------------------*/
 void UartProcess(char *RxBuffer, char RxCounter);
@@ -531,7 +535,7 @@ uint8_t RTC_Init(const uint8_t clk_source)
 //  /* Clear SysTick Counter */
 //  SysTick_CounterCmd(SysTick_Counter_Clear);
 //}
-void Ethernet_Configuration(void)
+void Ethernet_Configuration(const uint8_t flag)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
   /* ETHERNET pins configuration */
@@ -689,7 +693,7 @@ void Ethernet_Configuration(void)
   ETH_DMAITConfig(ETH_DMA_IT_NIS | ETH_DMA_IT_R, ENABLE);
   
   //TYH:20130407 初始化以太网判断变量
-  Ethernet_parameter_init();
+  Ethernet_parameter_init(flag);
 }
 
 
@@ -1231,11 +1235,26 @@ void _USART1_IRQHandler(void)
   }
 }
 
-void Ethernet_parameter_init(void)
+void Ethernet_parameter_init(const uint8_t flag)
 {
+  uint32_t link_HWRST_count, recv_HWRST_count;
+  
+  if(flag)    //非CPU初始化出发的复位
+  {
+    link_HWRST_count = eth_link_count.HWRST_count;
+    recv_HWRST_count = eth_recv_count.HWRST_count;
+  }
+  
   memset(&eth_link_count, 0, sizeof(Count_Type));
   memset(&eth_recv_count, 0, sizeof(Count_Type));
   eth_reset_flag = 0;
+  eth_recv_flag = 0;
+  
+  if(flag)    //非CPU初始化出发的复位
+  {
+    eth_link_count.HWRST_count = link_HWRST_count;
+    eth_recv_count.HWRST_count = recv_HWRST_count;
+  }  
   
   return;
 }
@@ -1249,7 +1268,7 @@ uint8_t EthStateCheck(void)
     if(EthInitState == 0) //是否初始化过
     {
       //初始化 以太网
-      Ethernet_Configuration();
+      Ethernet_Configuration(1);
       
       if(EthInitState == 1)
       {  
@@ -1261,19 +1280,31 @@ uint8_t EthStateCheck(void)
     else //已经初始化完成
     {
       //判断以太网收发状态
-      if(EthRecvCheck())
+      if( !EthRecvCheck() )
       {
-        //是否要进行以太网复位
+        //是否要进行以太网复位  
+        //tyh:20130806 添加判断复位CPU功能
         if(eth_recv_count.count > SetCurrent.eth_recv_time) //大于指定的时间, 复位以太网
         {
-          if(eth_recv_count.SWRST_count < ETH_SWRST_COUNT)
+          if(eth_recv_count.HWRST_count > ETH_HWRST_COUNT)
           {
+            //tyh:20130806 需添加复位记录
+            ResetCpu(ETH_RECV_RESET);
+            
+            result = 0;
+            return result;
+          }
+          
+          if(eth_recv_count.SWRST_count < ETH_SWRST_COUNT)
+          {/*
             Set_eth_reset_flag(Ethernet_SWRST_FLAG);
             eth_recv_count.SWRST_count++;
           }
           else
-          {
+          {*/
             Set_eth_reset_flag(Ethernet_HWRST_FLAG);
+            eth_recv_count.HWRST_count++;
+            
             eth_recv_count.SWRST_count = 0;
           }
         }
@@ -1285,7 +1316,19 @@ uint8_t EthStateCheck(void)
     //是否要进行以太网复位
     if(eth_link_count.count > SetCurrent.eth_link_time) //大于指定的时间, 复位以太网
     {
-      Set_eth_reset_flag(Ethernet_HWRST_FLAG);
+      if(eth_link_count.HWRST_count > ETH_HWRST_NOLINK)
+      {
+        //tyh:20130806 需添加复位记录
+        ResetCpu(ETH_LINK_RESET);
+        
+        result = 0;
+        return result;        
+      }
+      else
+      {
+        Set_eth_reset_flag(Ethernet_HWRST_FLAG);
+        eth_link_count.HWRST_count++;
+      }
     }
   }
   
@@ -1341,11 +1384,20 @@ uint8_t EthRecvCheck(void)
     
     //    if( (eth_recv_count.t_now.tm_mon > eth_recv_count.t_begin.tm_mon)
     //       ||(eth_recv_count.t_now.tm_mday > eth_recv_count.t_begin.tm_mday) )
-    if( (eth_recv_count.t_now.tm_hour > eth_recv_count.t_begin.tm_hour)
-       ||(eth_recv_count.t_now.tm_min > eth_recv_count.t_begin.tm_min) )    
+    if( Get_eth_recv_flag() == 0 )
     {
-      eth_recv_count.count++;
-      eth_recv_count.t_begin = eth_recv_count.t_now;
+      if( (eth_recv_count.t_now.tm_hour > eth_recv_count.t_begin.tm_hour)
+         ||(eth_recv_count.t_now.tm_min > eth_recv_count.t_begin.tm_min) )    
+      {
+        eth_recv_count.count++;
+        eth_recv_count.t_begin = eth_recv_count.t_now;
+      }
+      
+      result = 0;
+    }
+    else
+    {
+      Set_eth_recv_flag(0);   //清除以太网接收标志位
       
       result = 1;
     }
@@ -1410,7 +1462,7 @@ void Ethernet_SWRST()
   }
   
   EthInitState = 0;  
-  Ethernet_parameter_init();
+  Ethernet_parameter_init(1);
   
   printf(" ******* 以太网[软件]复位完成, 等待重新初始化... *******\r\n");
   
@@ -1476,11 +1528,87 @@ uint8_t Check_i2c_State()
   return result;
 }
 
+void Set_eth_recv_flag(const uint8_t flag)
+{
+  eth_recv_flag = flag;
+  
+  return;
+}
 
+uint8_t Get_eth_recv_flag()
+{
+  uint8_t flag = 0;
+  
+  flag = eth_recv_flag;
+  
+  return flag;  
+}
 
+void ResetCpu(const uint8_t flag)
+{
+  SetResetLog(flag);
+  
+  NVIC_SystemReset();
+  
+}
 
-
-
+//tyh:20130806 增加记录CPU复位的原因及次数
+uint8_t SetResetLog(const uint8_t flag)
+{
+  Setting *setaddr;
+  uint8_t result = 0;
+  
+  setaddr=&SetCurrent;
+  setaddr->Mem_Used_Check = 0xA55A;
+  
+  switch(flag)
+  {
+  case I2C_RESET:
+    if(setaddr->i2c_reset == 0xffff)
+      setaddr->i2c_reset = 1;
+    else
+      setaddr->i2c_reset++;
+    break;
+    
+  case ETH_RECV_RESET:
+    if(setaddr->eth_recv_reset == 0xffff)
+      setaddr->eth_recv_reset = 1;
+    else    
+      setaddr->eth_recv_reset++;
+    break;
+    
+  case ETH_LINK_RESET:
+    if(setaddr->eth_link_reset == 0xffff)
+      setaddr->eth_link_reset = 1;
+    else     
+      setaddr->eth_link_reset++;
+    break;
+    
+  default:
+    if(setaddr->def_reset == 0xffff)
+      setaddr->def_reset = 1;
+    else     
+      setaddr->def_reset++;
+    break;
+  }
+  
+#if STORE_METHOD == FLASH_METHOD 
+  if( DataBase_Write(STORAGE_ROMADDR, (u32*)setaddr, sizeof(Setting)))
+#elif STORE_METHOD == BKP_METHOD
+    if( DataBase_Write(STORAGE_ROMADDR, (u16*)setaddr, sizeof(Setting)))
+#endif
+    {      
+      printf("CPU复位记录写入成功！\r\n");
+      result = 1;
+    }
+    else
+    {
+      printf("CPU复位记录写入失败！\r\n");
+      result = 0;
+    }
+  
+  return result;
+}
 
 
 

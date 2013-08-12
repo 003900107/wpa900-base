@@ -22,7 +22,12 @@ extern Setting SetCurrent;
 extern uint8_t DevNameStr[16];
 extern uint8_t Compress_Factor;
 extern __IO uint8_t Can_Online;
+
+
 extern float AI_Reset_Count;
+extern Count_Type eth_link_count;
+extern Count_Type eth_recv_count;
+
 //extern __IO struct tm time_now;
 /*颜色控制定义*/
 const char *const vert ="\033[0;32;40m" ;
@@ -162,6 +167,8 @@ const ShellCmd CmdTable[]=
   {"setlinktime", CmdQNA, 1}, //32
   {"setrecvtime", CmdQNA, 1}, //33
   {"aicount", CmdShowData, 1},   //34
+  {"netreg", CmdShowData, 1},   //35
+  {"log", CmdShowData, 1},   //36
   {0,0,0}
 };
 
@@ -293,6 +300,12 @@ uint32_t ShellCmdMatch(char *a,char *b,uint8_t len)
       case 33:
         Shell_Msg.m_type=CMD_AI_RESET_COUNT;
         break;
+      case 34:
+        Shell_Msg.m_type=CMD_NET_REG;
+        break;
+      case 35:
+        Shell_Msg.m_type=CMD_LOG;
+        break;
         
       default: 
         return 0; 
@@ -308,9 +321,11 @@ uint32_t ShellCmdMatch(char *a,char *b,uint8_t len)
       }
       else
       {
-        if((Shell_Msg.m_type == CMD_RESTOREIP)||(Shell_Msg.m_type == CMD_SHOWIP)
-           ||(Shell_Msg.m_type == CMD_REBOOT)||(Shell_Msg.m_type == CMD_DI)
-             ||(Shell_Msg.m_type == CMD_RESET_ETH)||(Shell_Msg.m_type == CMD_UPDATE_FIRMWARE))
+        if( (Shell_Msg.m_type == CMD_RESTOREIP)||(Shell_Msg.m_type == CMD_SHOWIP)
+           ||(Shell_Msg.m_type == CMD_REBOOT)||(Shell_Msg.m_type == CMD_DO)
+             ||(Shell_Msg.m_type == CMD_RESET_ETH)||(Shell_Msg.m_type == CMD_UPDATE_FIRMWARE)
+               ||(Shell_Msg.m_type == CMD_NET_REG)||(Shell_Msg.m_type == CMD_LOG) 
+                 ||(Shell_Msg.m_type == CMD_AI_RESET_COUNT) )
         {
           result=CmdTable[j].CmdFunc(b,&Shell_Msg);
           break;
@@ -857,6 +872,22 @@ uint32_t CmdShowData(char *outputstr,T_MESSAGE *message)
     sprintf(p,"AI RESET COUNT = %7.0f\r\n", AI_Reset_Count);
     p+=strlen("AI RESET COUNT = 1234567\r\n");
     break;
+    
+  case CMD_NET_REG:
+    sprintf(p,"ETH_RECV=%5d & eth_recv_count=%5d & eth_recv_time=%5d\r\n", 
+            EthRecvCheck(), eth_recv_count.count, SetCurrent.eth_recv_time);
+    p+=strlen("ETH_RECV=12345 & eth_recv_count=12345 & eth_recv_time=12345\r\n");
+    
+    sprintf(p,"ETH_LINK=%5d & eth_link_count=%5d & eth_link_time=%5d\r\n", 
+            EthLinkCheck(), eth_link_count.count, SetCurrent.eth_link_time);
+    p+=strlen("ETH_LINK=12345 & eth_link_count=12345 & eth_link_time=12345\r\n");    
+    break;
+    
+  case CMD_LOG:
+    sprintf(p,"RESET LOG: I2C=%5d & ETH_RECV=%5d & ETH_LINK=%5d & def=%5d\r\n", 
+            SetCurrent.i2c_reset, SetCurrent.eth_recv_reset, SetCurrent.eth_link_reset, SetCurrent.def_reset);
+    p+=strlen("RESET LOG: I2C=12345 & ETH_RECV=12345 & ETH_LINK=12345 & def=12345\r\n");   
+    break;    
     
   default:
     break;
@@ -1412,3 +1443,4 @@ uint32_t ShellSetEthTime(char *entry, char *b, uint8_t len)
   
   return (p-b);
 }
+

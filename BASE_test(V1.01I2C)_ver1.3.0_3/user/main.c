@@ -31,7 +31,7 @@ FlagStatus status;
 uint8_t reset_flag = 0;
 
 /* Private define ------------------------------------------------------------*/
-#define _TEST  //test, di_1 open
+#define _TEST  //test, di_1 open     /*tyh_test*/
 
 
 /* Private functions ---------------------------------------------------------*/
@@ -217,7 +217,7 @@ int main(void)
   GPIO_WriteBit(ETH_RESET,  Bit_SET);   //拉高DM9000 nRST, 复位启动
   
   printf(" >>>>>>> ETH config begin >>>>>>>\r\n");
-  Ethernet_Configuration();
+  Ethernet_Configuration(0);
 #ifdef TEST_PARTS  
   GPIO_WriteBit(CANTX_LED,  Bit_RESET);
   GPIO_WriteBit(CANRX_LED,  Bit_SET);

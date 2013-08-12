@@ -30,9 +30,12 @@ NetState comstate[4]=
 u8 netstat(char *p)
 {
   u8 i,IpTab[4],strcnt=0;
+  
   sprintf(p,"协议	  本地地址	   外地地址     状态\r\n");
   strcnt+=strlen("协议	  本地地址	   外地地址     状态\r\n");
+  
   p+=strcnt;
+  
   for(i=0;i<4;i++)
   {
     if(comstate[i].state>0) 

@@ -68,6 +68,10 @@
 #define DI14	 GPIOE,	GPIO_Pin_6
 #define DI15	 GPIOE,	GPIO_Pin_7
 
+
+#define I2C_RESET       1
+#define ETH_RECV_RESET  2
+#define ETH_LINK_RESET  3
 									
 typedef struct
 {
@@ -86,6 +90,7 @@ typedef struct
   struct tm t_begin;
   struct tm t_now;
   uint32_t SWRST_count; //软复位计数器
+  uint32_t HWRST_count; //硬复位计数器  
 }Count_Type;
 
 
@@ -118,8 +123,8 @@ void _USART1_IRQHandler(void);
 uint8_t EthStateCheck(void);
 uint8_t EthLinkCheck(void);
 uint8_t EthRecvCheck(void);
-void Ethernet_Configuration(void);
-void Ethernet_parameter_init(void);
+void Ethernet_Configuration(const uint8_t flag);
+void Ethernet_parameter_init(const uint8_t flag);
 void CloseEth(void);
 void CommunicationInit(void);
 void Udp_timing_test();
@@ -130,7 +135,13 @@ uint8_t Set_eth_reset_flag(const uint8_t flag);
 uint8_t Get_eth_reset_flag();
 uint8_t Reset_eth_recv_count();
 
+void    Set_eth_recv_flag(const uint8_t flag);
+uint8_t Get_eth_recv_flag();
+
 uint8_t Check_i2c_State();
+
+void ResetCpu(const uint8_t flag);
+uint8_t SetResetLog(const uint8_t flag);
 
 //tyh:20130731
 //void I2C_Configuration_cpal(void);
