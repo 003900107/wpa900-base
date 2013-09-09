@@ -72,6 +72,8 @@
 #define I2C_RESET       1
 #define ETH_RECV_RESET  2
 #define ETH_LINK_RESET  3
+#define ETH_RECV_DAY_RESET  4
+#define ETH_LINK_DAY_RESET  5
 									
 typedef struct
 {
@@ -93,6 +95,8 @@ typedef struct
   uint32_t HWRST_count; //硬复位计数器  
 }Count_Type;
 
+//tyh:20130813 时间判断类型标识
+enum StampType{ sec, min, hour, day, mon, year};
 
 void RCC_Configuration(void);
 void RTC_Configuration(void);
@@ -123,6 +127,7 @@ void _USART1_IRQHandler(void);
 uint8_t EthStateCheck(void);
 uint8_t EthLinkCheck(void);
 uint8_t EthRecvCheck(void);
+uint8_t EthRecvCount(void);
 void Ethernet_Configuration(const uint8_t flag);
 void Ethernet_parameter_init(const uint8_t flag);
 void CloseEth(void);
@@ -131,18 +136,23 @@ void Udp_timing_test();
 void Ethernet_SWRST();
 void Ethernet_HWRST();
 
-uint8_t Set_eth_reset_flag(const uint8_t flag);
-uint8_t Get_eth_reset_flag();
-uint8_t Reset_eth_recv_count();
+void      Set_eth_reset_flag(const uint8_t flag);
+uint8_t   Get_eth_reset_flag();
 
-void    Set_eth_recv_flag(const uint8_t flag);
-uint8_t Get_eth_recv_flag();
+void      Set_eth_recv_flag(const uint8_t flag);
+uint8_t   Get_eth_recv_flag();
 
-uint8_t Check_i2c_State();
+uint8_t   Check_i2c_State();
 
-void ResetCpu(const uint8_t flag);
-uint8_t SetResetLog(const uint8_t flag);
+void      Reset_eth_count();
+void      ResetCpu(const uint8_t flag);
 
+uint8_t   SetResetLog(const uint8_t flag);
+uint16_t  SetResetReg(const uint16_t reg);
+void      SetDayResetReg(uint16_t* reg, uint16_t* dayReg);
+
+uint8_t   CheckDayReset(Count_Type* Count);
+uint8_t   CheckTimeStamp(Count_Type* Count, enum StampType type, const uint8_t count);
 //tyh:20130731
 //void I2C_Configuration_cpal(void);
 

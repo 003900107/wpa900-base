@@ -169,6 +169,8 @@ const ShellCmd CmdTable[]=
   {"aicount", CmdShowData, 1},   //34
   {"netreg", CmdShowData, 1},   //35
   {"log", CmdShowData, 1},   //36
+  {"clrreset", CmdQNA, 1},   //37
+  {"clrdayreset", CmdQNA, 1},   //38
   {0,0,0}
 };
 
@@ -306,6 +308,12 @@ uint32_t ShellCmdMatch(char *a,char *b,uint8_t len)
       case 35:
         Shell_Msg.m_type=CMD_LOG;
         break;
+      case 36:
+        Shell_Msg.m_type=CMD_CLR_RESET;
+        break;
+      case 37:
+        Shell_Msg.m_type=CMD_LOG_DAY_RESET;
+        break;        
         
       default: 
         return 0; 
@@ -325,7 +333,8 @@ uint32_t ShellCmdMatch(char *a,char *b,uint8_t len)
            ||(Shell_Msg.m_type == CMD_REBOOT)||(Shell_Msg.m_type == CMD_DO)
              ||(Shell_Msg.m_type == CMD_RESET_ETH)||(Shell_Msg.m_type == CMD_UPDATE_FIRMWARE)
                ||(Shell_Msg.m_type == CMD_NET_REG)||(Shell_Msg.m_type == CMD_LOG) 
-                 ||(Shell_Msg.m_type == CMD_AI_RESET_COUNT) )
+                 ||(Shell_Msg.m_type == CMD_AI_RESET_COUNT)||(Shell_Msg.m_type == CMD_CLR_RESET)
+                   ||(Shell_Msg.m_type == CMD_LOG_DAY_RESET))
         {
           result=CmdTable[j].CmdFunc(b,&Shell_Msg);
           break;
@@ -884,9 +893,13 @@ uint32_t CmdShowData(char *outputstr,T_MESSAGE *message)
     break;
     
   case CMD_LOG:
-    sprintf(p,"RESET LOG: I2C=%5d & ETH_RECV=%5d & ETH_LINK=%5d & def=%5d\r\n", 
+    sprintf(p,"RESET LOG: I2C=0X%04X & ETH_RECV=0X%04X & ETH_LINK=0X%04X & def=0X%04X\r\n", 
             SetCurrent.i2c_reset, SetCurrent.eth_recv_reset, SetCurrent.eth_link_reset, SetCurrent.def_reset);
-    p+=strlen("RESET LOG: I2C=12345 & ETH_RECV=12345 & ETH_LINK=12345 & def=12345\r\n");   
+    p+=strlen("RESET LOG: I2C=0X1234 & ETH_RECV=0X1234 & ETH_LINK=0X1234 & def=0X1234\r\n");
+    
+    sprintf(p,"RESET LOG: RECV_DAY=0X%04X & LINK_DAY=0X%04X\r\n", 
+            SetCurrent.eth_recv_day_reset, SetCurrent.eth_link_day_reset);
+    p+=strlen("RESET LOG: RECV_DAY=0X1234 & LINK_DAY=0X1234\r\n");     
     break;    
     
   default:
@@ -1119,6 +1132,8 @@ uint32_t CmdQNA(char *outputstr,T_MESSAGE *message)
   case CMD_UPDATE_FIRMWARE:
   case CMD_ETH_LINK_TIME:
   case CMD_ETH_RECV_TIME:
+  case CMD_CLR_RESET:
+  case CMD_LOG_DAY_RESET:
 #if LINGUA == EN 
     sprintf(outputstr,"Enter Password Please!\r\n");
     p+=strlen("Enter Password Please!\r\n");
@@ -1304,12 +1319,47 @@ uint32_t CmdPwdAsserted(char *outputstr,T_MESSAGE *message)
     p+=strlen("输入以太网判断时间参数\r\n");
     
     Shell_State=SET_ETH_TIME;
-    break;    
+    break;
+    
+  //tyh:20130814 添加清除复位记录寄存器  
+  case CMD_CLR_RESET:
+    if(ClearReg(RESET_REG))
+    {
+      sprintf(outputstr,"恢复CPU复位计数器为'0', 成功!\r\n");     
+      p+=strlen("恢复CPU复位计数器为'0', 成功!\r\n");
+    }
+    else
+    {
+      sprintf(outputstr,"恢复CPU复位计数器为'0', 失败!\r\n");     
+      p+=strlen("恢复CPU复位计数器为'0', 失败!\r\n");
+    }
+    
+    Shell_State=INIT;
+    message->m_type=CMD_NULL; 
+    break;
+    
+  case CMD_LOG_DAY_RESET:
+    if(ClearReg(RESET_DAY_REG))
+    {
+      sprintf(outputstr,"恢复日复位计数器为'0', 成功!\r\n");     
+      p+=strlen("恢复日复位计数器为'0', 成功!\r\n");      
+    }
+    else
+    {
+      sprintf(outputstr,"恢复日复位计数器为'0', 成功!\r\n");     
+      p+=strlen("恢复日复位计数器为'0', 成功!\r\n");      
+    }    
+    Shell_State=INIT;
+    message->m_type=CMD_NULL; 
+    break;
     
   default:
+    Shell_State=INIT;
+    message->m_type=CMD_NULL;     
     break;  
     
   }
+  
   return (p-outputstr);	  
 }
 
@@ -1444,3 +1494,42 @@ uint32_t ShellSetEthTime(char *entry, char *b, uint8_t len)
   return (p-b);
 }
 
+uint8_t ClearReg(const uint8_t regType)
+{
+  uint8_t result = 1;
+  Setting *setaddr;
+  
+  setaddr=&SetCurrent;    
+  
+  switch(regType)
+  {
+  case RESET_REG:
+    setaddr->i2c_reset = 0;
+    setaddr->eth_recv_reset = 0;
+    setaddr->eth_link_reset = 0;
+    break;
+    
+  case RESET_DAY_REG:
+    setaddr->eth_recv_day_reset = 0;
+    setaddr->eth_link_day_reset = 0;
+    break;
+    
+  default:
+    result = 0;
+  }
+  
+#if STORE_METHOD == FLASH_METHOD 
+  if( DataBase_Write(STORAGE_ROMADDR, (u32*)setaddr, sizeof(Setting)))
+#elif STORE_METHOD == BKP_METHOD
+    if( DataBase_Write(STORAGE_ROMADDR, (u16*)setaddr, sizeof(Setting)))
+#endif
+    {      
+      result = 1;
+    }
+    else
+    {
+      result = 0;
+    }  
+  
+  return result;
+}

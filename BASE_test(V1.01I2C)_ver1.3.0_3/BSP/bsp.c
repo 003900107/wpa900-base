@@ -90,7 +90,7 @@ void RCC_Configuration(void)
 {
   RCC_ADCCLKConfig(RCC_PCLK2_Div6); 
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1|RCC_APB1Periph_USART2|
-                         RCC_APB1Periph_PWR |RCC_APB1Periph_BKP, ENABLE);
+                         RCC_APB1Periph_PWR |RCC_APB1Periph_BKP|RCC_APB1Periph_TIM2, ENABLE);
 #ifdef CAN_APP
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1|RCC_APB1Periph_CAN2, ENABLE);
 #endif
@@ -155,7 +155,7 @@ void GPIO_Configuration(void)
 void NVIC_Configuration(void)
 {
   //TYH:2013-05-10设置程序启动地址
-  //NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0xA000); 
+  NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0xA000); 
   
   /* Configure and enable ADC interrupt */
   NVIC_PriorityGroupConfig(NVIC_PriorityGroup_3);	  
@@ -185,11 +185,17 @@ void NVIC_Configuration(void)
   NVIC_Init(&NVIC_InitStructure);
 #endif
   
+  //tyh:20130813 增加time2配置
+  NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 4;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_Init(&NVIC_InitStructure);  
+  
 #ifndef TEST  
   //20130312 TYH:添加 uart 接收中断, 用于处理串口数据
   NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 4;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_Init(&NVIC_InitStructure);
 #endif
   
@@ -1259,6 +1265,14 @@ void Ethernet_parameter_init(const uint8_t flag)
   return;
 }
 
+/****************************************************************
+return: 1, 以太网初始化成功
+        2, 无接受数据, 开启日复位模式, 但没有达到复位条件
+        3, 无接受数据, 正常复位模式, 但没有达到复位条件
+        4, 无链接, 开启日复位模式, 但没有达到复位条件
+        5, 无链接, 正常复位模式, 但没有达到复位条件
+        0, 以太网初始化不成功
+****************************************************************/
 uint8_t EthStateCheck(void)
 {
   uint8_t result = 0;
@@ -1279,131 +1293,180 @@ uint8_t EthStateCheck(void)
     }
     else //已经初始化完成
     {
-      //判断以太网收发状态
-      if( !EthRecvCheck() )
+      if( !EthRecvCheck() )   //是否收到过数据
       {
-        //是否要进行以太网复位  
-        //tyh:20130806 添加判断复位CPU功能
-        if(eth_recv_count.count > SetCurrent.eth_recv_time) //大于指定的时间, 复位以太网
+        //判断以太网收发状态
+        if(SetCurrent.eth_recv_reset & 0x8000)  //tyh:20130813 是否开启日复位模式
         {
-          if(eth_recv_count.HWRST_count > ETH_HWRST_COUNT)
+          if( CheckDayReset(&eth_recv_count) )    //是否满足复位条件
           {
-            //tyh:20130806 需添加复位记录
-            ResetCpu(ETH_RECV_RESET);
-            
-            result = 0;
-            return result;
+            ResetCpu(ETH_RECV_DAY_RESET);   //启动日复位
           }
-          
-          if(eth_recv_count.SWRST_count < ETH_SWRST_COUNT)
-          {/*
-            Set_eth_reset_flag(Ethernet_SWRST_FLAG);
-            eth_recv_count.SWRST_count++;
-          }
-          else
-          {*/
-            Set_eth_reset_flag(Ethernet_HWRST_FLAG);
-            eth_recv_count.HWRST_count++;
-            
-            eth_recv_count.SWRST_count = 0;
-          }
+          else 
+            result = 2;      
         }
-      }      
-    }
+        else
+        {
+          if( EthRecvCount() )
+          {
+            //是否要进行以太网复位    
+            //tyh:20130806 添加判断复位CPU功能
+            if(eth_recv_count.count > SetCurrent.eth_recv_time) //大于指定的时间, 复位以太网
+            {
+              if(eth_recv_count.HWRST_count > ETH_HWRST_COUNT)    //判断是否达到硬件复位最大数
+              {
+                //tyh:20130806 需添加复位记录
+                ResetCpu(ETH_RECV_RESET);   //复位CPU
+              }
+              else
+              {
+                if(eth_recv_count.SWRST_count < ETH_SWRST_COUNT)
+                {
+                  /*  //去除软件复位, 直接启动以太网芯片硬复位
+                  Set_eth_reset_flag(Ethernet_SWRST_FLAG);
+                  eth_recv_count.SWRST_count++;
+                }
+                else
+                  {*/
+                  Set_eth_reset_flag(Ethernet_HWRST_FLAG);
+                  eth_recv_count.HWRST_count++;     //硬件复位计数器加'1'
+                  
+                  eth_recv_count.SWRST_count = 0;
+                }/* if(eth_recv_count.SWRST_count < ETH_SWRST_COUNT) */
+              }
+            }
+            else    /* if( EthRecvCount() ) */    //没有达到复位条件
+            {
+              result = 3;
+            }
+          }/* if( EthRecvCount() ) */
+        } 
+      }/* if( !EthRecvCheck() ) */
+    }/* if(EthInitState == 0) else */
   }
   else  //1.没有链接  2.没有链接,且以太网曾经初始化过(此种情况是否要复位)
   {
-    //是否要进行以太网复位
-    if(eth_link_count.count > SetCurrent.eth_link_time) //大于指定的时间, 复位以太网
+    //是否要进行相关复位
+    if(SetCurrent.eth_link_reset & 0x8000)  //tyh:20130813 是否开启日复位模式
     {
-      if(eth_link_count.HWRST_count > ETH_HWRST_NOLINK)
+      if( CheckDayReset(&eth_link_count) )    //是否满足复位条件
       {
-        //tyh:20130806 需添加复位记录
-        ResetCpu(ETH_LINK_RESET);
-        
-        result = 0;
-        return result;        
+        ResetCpu(ETH_LINK_DAY_RESET);   //启动日复位
+      }
+      else 
+        result = 4;      
+    }
+    else
+    {
+      if(eth_link_count.count > SetCurrent.eth_link_time) //大于指定的时间, 复位以太网
+      {
+        if(eth_link_count.HWRST_count > ETH_HWRST_NOLINK)   //判断是否达到硬件复位最大数
+        {
+          //tyh:20130806 需添加复位记录
+          ResetCpu(ETH_LINK_RESET);
+        }
+        else
+        {
+          Set_eth_reset_flag(Ethernet_HWRST_FLAG);    //启动以太网芯片硬复位
+          eth_link_count.HWRST_count++;     //复位计数器加'1'
+        }
       }
       else
       {
-        Set_eth_reset_flag(Ethernet_HWRST_FLAG);
-        eth_link_count.HWRST_count++;
+        result = 5;
       }
-    }
-  }
+    }/* if(SetCurrent.eth_link_reset & 0x8000) else */
+  }/* if( EthLinkCheck() ) else */
   
   return result;
 }
 
+
+/***********************************************************
+return: 0, 没有链接
+        1, 有链接
+***********************************************************/
 uint8_t EthLinkCheck(void)
 {
+  enum StampType type = min;
   uint8_t result = 0;
-  struct tm t;
+  uint8_t count = 1;    //单位判断时间周期, 此处表示 周期为1分钟
   
   if((ETH_ReadPHYRegister(PHY_ADDRESS, PHY_BSR) & PHY_Linked_Status)) 
   { 
     eth_link_count.count = 0;
+    eth_link_count.SWRST_count = 0;
+    eth_link_count.HWRST_count = 0;
+    
     result = 1;
   }
   else
-  {
-    t = Time_GetCalendarTime();
-    
+  {   
     if(eth_link_count.t_begin.tm_year == 0)
-      eth_link_count.t_begin = t;
+      eth_link_count.t_begin = Time_GetCalendarTime();
     else
-    {
-      eth_link_count.t_now = t;
-      
-      //      if( (eth_link_count.t_now.tm_mon > eth_link_count.t_begin.tm_mon)
-      //         ||(eth_link_count.t_now.tm_mday > eth_link_count.t_begin.tm_mday) )
-      if( (eth_link_count.t_now.tm_hour > eth_link_count.t_begin.tm_hour)
-         ||(eth_link_count.t_now.tm_min > eth_link_count.t_begin.tm_min) )      
+    {     
+      //tyh:20130813 修正临界时间的判断bug
+      if( (eth_link_count.t_begin.tm_hour>=23)&&(eth_link_count.t_begin.tm_min>=(60-count)) )  //时间标识为23:59时,特殊处理
       {
-        eth_link_count.count++;
-        eth_link_count.t_begin = eth_link_count.t_now;
+        eth_link_count.t_begin.tm_hour = 0;
+        eth_link_count.t_begin.tm_min = 0;
       }
+      
+      if(CheckTimeStamp(&eth_link_count, type, count))    //是否满足计数条件
+        eth_link_count.count++;
     }
   }
   
   return result;
 }
 
+
 uint8_t EthRecvCheck(void)
 {
   uint8_t result = 0;
-  struct tm t;
   
-  t = Time_GetCalendarTime();
-  
-  if(eth_recv_count.t_begin.tm_year == 0)
-    eth_recv_count.t_begin = t;
+  if( Get_eth_recv_flag() == 0 )  //是否收到过数据
+  {
+    result = 0;   //'否', 返回'0'
+  }
   else
   {
-    eth_recv_count.t_now = t;
+    Set_eth_recv_flag(0);   //清除以太网接收标志位
     
-    //    if( (eth_recv_count.t_now.tm_mon > eth_recv_count.t_begin.tm_mon)
-    //       ||(eth_recv_count.t_now.tm_mday > eth_recv_count.t_begin.tm_mday) )
-    if( Get_eth_recv_flag() == 0 )
-    {
-      if( (eth_recv_count.t_now.tm_hour > eth_recv_count.t_begin.tm_hour)
-         ||(eth_recv_count.t_now.tm_min > eth_recv_count.t_begin.tm_min) )    
-      {
-        eth_recv_count.count++;
-        eth_recv_count.t_begin = eth_recv_count.t_now;
-      }
-      
-      result = 0;
-    }
-    else
-    {
-      Set_eth_recv_flag(0);   //清除以太网接收标志位
-      
-      result = 1;
-    }
+    result = 1;   //'是', 返回'1'
   }
   
   return result;
+}
+
+/***********************************************************
+return: 0, 满足计数条件
+        1, 不满足计数条件
+***********************************************************/
+uint8_t EthRecvCount(void)
+{
+  enum StampType type = min;
+  uint8_t result = 0;
+  uint8_t count = 1;    //单位判断时间周期, 此处表示 周期为1分钟
+  
+  if(eth_recv_count.t_begin.tm_year == 0)
+    eth_recv_count.t_begin = Time_GetCalendarTime();
+  else
+  {
+    //tyh:20130813 修正临界时间的判断bug
+    if( (eth_recv_count.t_begin.tm_hour>=23)&&(eth_recv_count.t_begin.tm_min>=(60-count)) )  //时间标识为23:(60-count)时,特殊处理
+    {
+      eth_recv_count.t_begin.tm_hour = 0;
+      eth_recv_count.t_begin.tm_min = 0;
+    }
+    
+    result = CheckTimeStamp(&eth_recv_count, type, count);    //是否满足计数条件
+    if(result)
+      eth_recv_count.count++;
+  }
+  
+  return result;  
 }
 
 void CloseEth(void)
@@ -1490,14 +1553,9 @@ void Udp_timing_test()
   return;
 }
 
-uint8_t Set_eth_reset_flag(const uint8_t flag)
+void Set_eth_reset_flag(const uint8_t flag)
 {
-  uint8_t result = 0;
-  
   eth_reset_flag = flag;
-  result = 1;
-  
-  return result;
 }
 
 uint8_t Get_eth_reset_flag()
@@ -1509,12 +1567,17 @@ uint8_t Get_eth_reset_flag()
   return flag;  
 }
 
-uint8_t Reset_eth_recv_count()
+void Reset_eth_count()
 {
   eth_recv_count.count = 0;
   eth_recv_count.SWRST_count = 0;
+  eth_recv_count.HWRST_count = 0;
+  SetCurrent.eth_recv_reset &= 0x0fff;  //去除连续复位标记
   
-  return 1;
+  eth_link_count.count = 0;
+  eth_link_count.SWRST_count = 0;
+  eth_link_count.HWRST_count = 0;
+  SetCurrent.eth_link_reset &= 0x0fff;  //去除连续复位标记
 }
 
 
@@ -1531,6 +1594,10 @@ uint8_t Check_i2c_State()
 void Set_eth_recv_flag(const uint8_t flag)
 {
   eth_recv_flag = flag;
+  
+  //复归以太网接收数据判断寄存器
+  if(!flag)
+    Reset_eth_count();
   
   return;
 }
@@ -1549,14 +1616,14 @@ void ResetCpu(const uint8_t flag)
   SetResetLog(flag);
   
   NVIC_SystemReset();
-  
 }
 
 //tyh:20130806 增加记录CPU复位的原因及次数
 uint8_t SetResetLog(const uint8_t flag)
 {
-  Setting *setaddr;
-  uint8_t result = 0;
+  Setting   *setaddr;
+  uint8_t   result = 0;
+  uint16_t  reg;
   
   setaddr=&SetCurrent;
   setaddr->Mem_Used_Check = 0xA55A;
@@ -1564,31 +1631,55 @@ uint8_t SetResetLog(const uint8_t flag)
   switch(flag)
   {
   case I2C_RESET:
-    if(setaddr->i2c_reset == 0xffff)
+    /*
+    if(setaddr->i2c_reset == 0x0fff)
       setaddr->i2c_reset = 1;
     else
       setaddr->i2c_reset++;
+    */
+    reg = SetResetReg(setaddr->i2c_reset);
+    setaddr->i2c_reset = reg;  
     break;
     
   case ETH_RECV_RESET:
-    if(setaddr->eth_recv_reset == 0xffff)
+    /*
+    if(setaddr->eth_recv_reset == 0x0fff)
       setaddr->eth_recv_reset = 1;
     else    
       setaddr->eth_recv_reset++;
+    */
+    reg = SetResetReg(setaddr->eth_recv_reset);
+    setaddr->eth_recv_reset = reg;    
     break;
     
   case ETH_LINK_RESET:
-    if(setaddr->eth_link_reset == 0xffff)
+    /*
+    if(setaddr->eth_link_reset == 0x0fff)
       setaddr->eth_link_reset = 1;
     else     
       setaddr->eth_link_reset++;
+    */
+    reg = SetResetReg(setaddr->eth_link_reset);
+    setaddr->eth_link_reset = reg;    
+    break;
+    
+  case ETH_RECV_DAY_RESET:
+    SetDayResetReg(&setaddr->eth_recv_reset, &setaddr->eth_recv_day_reset);
+    break;
+    
+  case ETH_LINK_DAY_RESET:
+    SetDayResetReg(&setaddr->eth_link_reset, &setaddr->eth_link_day_reset);
     break;
     
   default:
-    if(setaddr->def_reset == 0xffff)
+    /*
+    if(setaddr->def_reset == 0x0fff)
       setaddr->def_reset = 1;
     else     
       setaddr->def_reset++;
+    */
+    reg = SetResetReg(setaddr->def_reset);
+    setaddr->def_reset = reg;
     break;
   }
   
@@ -1610,11 +1701,167 @@ uint8_t SetResetLog(const uint8_t flag)
   return result;
 }
 
+uint16_t SetResetReg(const uint16_t reg)
+{
+  uint16_t lReg;    //标志位的低数据字节    0x0fff
+  uint16_t hReg;    //标志位的高数据字节    0xf000
+  uint16_t result;
+  
+  lReg = reg&0x0fff;    //用于记录以太网芯片相关复位次数
+  hReg = reg&0xf000;    //用于判断是否开启天复位模式
+  
+  if(lReg == 0x0fff)
+    lReg = 1;
+  else
+    lReg++;
+  
+  hReg += 0x1000;   //以太网天复位模式开关计数器'+1', i2c复位记录中此位无效
+    
+  result = (hReg|lReg);
+  
+  return result;
+}
 
+void SetDayResetReg(uint16_t* reg, uint16_t* dayReg)
+{
+  uint16_t regTemp;
+  
+  *reg &= 0x0fff;   //去除最高位的日复位标记
+  
+  regTemp = *dayReg;
+  if((regTemp&0x0fff) == 365)    //日复位计数器 是否满一年
+  {
+    regTemp += 0x1000;    //日复位计数器 年标记加'1'
+    regTemp &= 0xf000;    //日复位计数器 复位日复位计数
+  }
+  else
+  {
+    regTemp++;
+  }
+  
+  *dayReg = regTemp;
+}
 
+uint8_t CheckDayReset(Count_Type* Count)
+{
+  enum StampType type = day;
+  uint8_t count = 1;    //单位判断时间周期, 此处表示 周期为1天
+  uint8_t result = 0;
+  Count_Type* pCount;
+  
+  pCount = Count;
+  
+  if(pCount->t_begin.tm_year == 0)
+  {
+    pCount->t_begin = Time_GetCalendarTime();
+    result = 0;
+  }
+  else
+  {
+    /*
+    pCount->t_now = Time_GetCalendarTime(); //获取当前时间
+    
+    //执行条件为"日>日 或者 月>月 或者 年>年，同时 小时>=小时 分>=分", 确保执行周期为"一天"
+    if( (pCount->t_now.tm_mday > pCount->t_begin.tm_mday)||(pCount->t_now.tm_mon > pCount->t_begin.tm_mon)
+       ||(pCount->t_now.tm_year > pCount->t_begin.tm_year) )
+    {
+      if( (pCount->t_now.tm_hour >= pCount->t_begin.tm_hour)&&(pCount->t_now.tm_min >= pCount->t_begin.tm_min) )      
+      {
+        pCount->t_begin = pCount->t_now;
+        
+        result = 1;
+      }
+    }
+    */
+    result = CheckTimeStamp(pCount, type, count);
+  }
+          
+  return result;
+}
 
+//tyh:20130813 增加TIM2定时器,用于以太网接受数据判断
+void TIM2_Configuration(void)
+{
+  TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+  
+  TIM_DeInit(TIM2);
+  
+  TIM_TimeBaseStructure.TIM_Prescaler = 9999;//72m/(19999+1) = 7.2K
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_Period = 35999;	   //7.2k/(35999+1) = 0.2    1/0.2 = 5S
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0x0;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0x0;
+  TIM_TimeBaseInit(TIM2,&TIM_TimeBaseStructure);
+  
+  
+  //TIM_ARRPreloadConfig(TIM2, ENABLE);
+  //TIM_ClearITPendingBit(TIM2, TIM_IT_CC1|TIM_IT_CC2|TIM_IT_CC3|TIM_IT_CC4|TIM_IT_Update);
+  
+  //清除溢出中断标志
+  TIM_ClearFlag(TIM2, TIM_FLAG_Update);
+  //禁止ARR预装载缓冲器
+  TIM_ARRPreloadConfig(TIM2, DISABLE);   
+  
+  TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE); 
+  TIM_Cmd(TIM2, ENABLE);
+}
 
+uint8_t CheckTimeStamp(Count_Type* Count, enum StampType type, const uint8_t count)
+{
+  Count_Type* pCount;
+  struct tm t;
+  uint8_t result = 0;
+  
+  pCount = Count;
+  
+  t = Time_GetCalendarTime();
+  
+  pCount->t_now = t;
+  
+  if(type == min)
+  {
+    if( (pCount->t_now.tm_hour > pCount->t_begin.tm_hour)
+       ||((pCount->t_now.tm_min - pCount->t_begin.tm_min) >= count) ) 
+    {
+      if(pCount->t_now.tm_sec >= pCount->t_begin.tm_sec)
+      {
+        //pCount->count++;
+        //pCount->t_begin = pCount->t_now;
+        result = 1;   //满足时间标识, 返回'1'
+      }
+      else if((pCount->t_now.tm_min - pCount->t_begin.tm_min) >= (count+1))   //tyh:20130823 处理极端情况"sec==59"
+      {
+        result = 1;
+      }
+    }
+  }
+  else if(type == day)
+  {
+    //执行条件为"日期数-日期数>=count 或者 年>年，同时 小时>=小时 分>=分", 确保执行周期为count指定天数
+    if( ((pCount->t_now.tm_yday - pCount->t_begin.tm_yday) >= count)
+       ||(pCount->t_now.tm_year > pCount->t_begin.tm_year) )
+    {
+      if( (pCount->t_now.tm_hour >= pCount->t_begin.tm_hour)&&(pCount->t_now.tm_min >= pCount->t_begin.tm_min) )      
+      {
+        //pCount->t_begin = pCount->t_now;
+        result = 1;   //满足时间标识, 返回'1'
+      }
+      else if( (pCount->t_now.tm_yday - pCount->t_begin.tm_yday) >= (count+1) ) //tyh:20130823 处理极端情况"min==59"&&"hour==23"
+      {                                                                         //由于采样频率为5s, 因此应该不会进入该判断
+        result = 1;                                                             //为避免出现的极端时间问题，故添加此判断
+      }
+    }    
+  }
+  else
+  {
+    result = 0;
+  }
+  
+  if(result)
+    pCount->t_begin = pCount->t_now;
 
+  return result;  
+}
 
 
 //void I2C_Configuration_cpal(void)

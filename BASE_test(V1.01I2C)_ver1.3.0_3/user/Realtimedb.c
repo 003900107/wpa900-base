@@ -140,11 +140,31 @@ void DataBase_Init(uint8_t *IPTab)
   
   SetCurrent.vers = VERSION;
   
+  //tyh:20130812 初始化以太网判断参数
   if((SetCurrent.eth_link_time == 0xffff)&&(SetCurrent.eth_recv_time == 0xffff))
   {//没有初始化过,采用默认值
     SetCurrent.eth_link_time = ETH_LINK_TIME;
     SetCurrent.eth_recv_time = ETH_RECV_TIME;
   }
+  
+  //tyh:20130812 初始化CPU复位相关参数
+  if(SetCurrent.i2c_reset == 0xffff)
+    SetCurrent.i2c_reset = 0;
+  
+  if(SetCurrent.eth_recv_reset == 0xffff)
+    SetCurrent.eth_recv_reset = 0;
+  
+  if(SetCurrent.eth_link_reset == 0xffff)
+    SetCurrent.eth_link_reset = 0;
+  
+  if(SetCurrent.def_reset == 0xffff)
+    SetCurrent.def_reset = 0;
+  
+  if((SetCurrent.eth_recv_day_reset == 0xffff)&&(SetCurrent.eth_link_day_reset == 0xffff))
+  {//没有初始化过,采用默认值
+    SetCurrent.eth_recv_day_reset = 0;
+    SetCurrent.eth_link_day_reset = 0;
+  }  
   
   return;
 }

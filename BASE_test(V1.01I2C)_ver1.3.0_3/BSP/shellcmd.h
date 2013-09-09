@@ -43,6 +43,9 @@
 #define CMD_AI_RESET_COUNT 0x18
 #define CMD_NET_REG        0x19
 #define CMD_LOG            0x1A
+//tyh:20130814 添加清除复位记录寄存器
+#define CMD_CLR_RESET      0x1B
+#define CMD_LOG_DAY_RESET  0x1C
 
 
 /*人机交互状态*/
@@ -61,6 +64,10 @@
 #define SET_ETH_TIME 0x0013
 //#define UPDATE_FIRMWARE 0x0014
 
+
+//tyh:20130814  flash寄存器类型
+#define RESET_REG       1
+#define RESET_DAY_REG   2
 
 struct TagT_MESSAGE{
   uint8_t	m_type;		/* message type */
@@ -115,6 +122,9 @@ void CmdnShellInit(void);
 uint32_t ShellEtrRestoreIP(char *entry, char *b,uint8_t len);
 uint32_t CmdShowIP(char *outputstr,T_MESSAGE *message);
 uint32_t ShellSetEthTime(char *entry, char *b,uint8_t len);
+
+//tyh:20130814 添加清除复位记录寄存器
+uint8_t ClearReg(const uint8_t regType);
 
 #endif
 

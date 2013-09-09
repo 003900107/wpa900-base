@@ -31,7 +31,7 @@ FlagStatus status;
 uint8_t reset_flag = 0;
 
 /* Private define ------------------------------------------------------------*/
-#define _TEST  //test, di_1 open     /*tyh_test*/
+//#define _TEST  //test, di_1 open     /*tyh_test*/
 
 
 /* Private functions ---------------------------------------------------------*/
@@ -226,7 +226,9 @@ int main(void)
 #endif  
   printf(" <<<<<<< ETH config complete <<<<<<<\r\n\r\n");  
 
-    
+  /* time2 configuration ------------------------------------------------------*/  
+  TIM2_Configuration();  
+  
 #ifdef WATCHDOG
   /* WATCHDOG configuration ------------------------------------------------------*/
   IWDG_Configuration();
@@ -258,7 +260,8 @@ int main(void)
     
 
     //判断以太网状态, 决定是否要复位以太网
-    EthStateCheck();
+    //tyh:20130813 将以太网判断放入TIM2, 每5秒执行一次
+    //EthStateCheck();          
     
     reset_flag = Get_eth_reset_flag();
     if(reset_flag == Ethernet_SWRST_FLAG)

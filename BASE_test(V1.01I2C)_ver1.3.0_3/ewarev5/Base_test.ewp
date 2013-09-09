@@ -150,6 +150,7 @@
           <state>USE_FULL_ASSERT</state>
           <state>USE_STDPERIPH_DRIVER</state>
           <state>CAN_APP</state>
+          <state>WATCHDOG</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -559,7 +560,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>Base_test_130806.hex</state>
+          <state>Base_test_130823.hex</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -677,7 +678,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$PROJ_DIR$\generic_cortex.icf</state>
+          <state>$PROJ_DIR$\generic_cortex_IAP.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>

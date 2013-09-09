@@ -91,6 +91,8 @@ typedef struct tag_SETTING
   u16 eth_recv_reset;
   u16 eth_link_reset;
   u16 def_reset;
+  u16 eth_recv_day_reset;
+  u16 eth_link_day_reset;
 }Setting;
 
 #if STORE_METHOD == FLASH_METHOD

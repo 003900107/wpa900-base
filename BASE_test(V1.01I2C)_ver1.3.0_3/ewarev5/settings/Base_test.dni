@@ -15,7 +15,7 @@ WatchCond=_ 0
 Watch0=_ 0 "" 0 "" 0 "" 0 "" 0 0 0 0
 Watch1=_ 0 "" 0 "" 0 "" 0 "" 0 0 0 0
 [DebugChecksum]
-Checksum=-1143870989
+Checksum=1793083337
 [DisAssemblyWindow]
 NumStates=_ 3
 State 1=_ 1
@@ -76,6 +76,32 @@ ShowTimeLog=1
 ShowTimeSum=0
 Title0=Power [mA]
 Setup0=0 1 0 500 2 0 4 1 0
+[Log file]
+LoggingEnabled=_ 0
+LogFile=_ ""
+Category=_ 0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
+[SWOTraceWindow]
+PcSampling=0
+InterruptLogs=0
+ForcedTimeStamps=0
+EventCPI=0
+EventEXC=0
+EventFOLD=0
+EventLSU=0
+EventSLEEP=0
+[TraceHelperExtra]
+Enabled=0
+ShowSource=1
+[CallStackLog]
+Enabled=0
+[DriverProfiling]
+Enabled=0
+Mode=3
+Graph=0
+Symbiont=0
 [Disassemble mode]
 mode=0
 [Breakpoints]
@@ -114,17 +140,9 @@ Bp31=_ "STD_CODE" "{E:\yun\百度云\github\wpa900-base\BASE_test(V1.01I2C)_ver1.3.
 Bp32=_ "STD_CODE" "{E:\yun\百度云\github\wpa900-base\BASE_test(V1.01I2C)_ver1.3.0_3\BSP\tcp_modbus.c}.298.3@1" 1 0 0 0 "" 0 "" 0
 Bp33=_ "STD_CODE" "{E:\yun\百度云\github\wpa900-base\BASE_test(V1.01I2C)_ver1.3.0_3\BSP\BaseBus_Protocol.c}.437.5@1" 1 0 0 0 "" 0 "" 0
 Bp34=_ "STD_CODE" "{E:\yun\百度云\github\wpa900-base\BASE_test(V1.01I2C)_ver1.3.0_3\BSP\CanBus.c}.138.7@1" 1 0 0 0 "" 0 "" 0
-Bp35=_ "STD_CODE" "{E:\yun\百度云\github\wpa900-base\BASE_test(V1.01I2C)_ver1.3.0_3\BSP\bsp.c}.1551.3@1" 1 0 0 0 "" 0 "" 0
-Bp36=_ "STD_CODE" "{E:\yun\百度云\github\wpa900-base\BASE_test(V1.01I2C)_ver1.3.0_3\BSP\shellcmd.c}.1331.3@1" 1 0 0 0 "" 0 "" 0
-Bp37=_ "STD_CODE" "{E:\yun\百度云\github\wpa900-base\BASE_test(V1.01I2C)_ver1.3.0_3\user\main.c}.117.3@1" 1 0 0 0 "" 0 "" 0
-Count=38
-[Log file]
-LoggingEnabled=_ 0
-LogFile=_ ""
-Category=_ 0
-[TermIOLog]
-LoggingEnabled=_ 0
-LogFile=_ ""
+Bp35=_ "STD_CODE" "{$PROJ_DIR$}.1551.3@1" 0 0 0 0 "" 0 "" 0
+Bp36=_ "STD_CODE" "{E:\yun\百度云\github\wpa900-base\BASE_test(V1.01I2C)_ver1.3.0_3\BSP\bsp.c}.1841.5@1" 1 0 0 0 "" 0 "" 0
+Count=37
 [Aliases]
 A0=_ "C:\Users\ppw\Desktop\BASE_test(V1.01I2C)_ver1.2.2\BSP\BaseBus_Protocol.c" ""
 A1=_ "E:\My Labs_4working\BASE_test\CMSIS\core_cm3.h" ""
@@ -134,22 +152,3 @@ A4=_ "E:\My Labs_4working\WPA600\BASE_test\STM32F10x_StdPeriph_Driver\src\stm32f
 A5=_ "E:\My Labs_4working\WPU\BASE_test\lwip-1.3.1\src\core\netif.c" ""
 Count=6
 SuppressDialog=1
-[SWOTraceWindow]
-PcSampling=0
-InterruptLogs=0
-ForcedTimeStamps=0
-EventCPI=0
-EventEXC=0
-EventFOLD=0
-EventLSU=0
-EventSLEEP=0
-[TraceHelperExtra]
-Enabled=0
-ShowSource=1
-[CallStackLog]
-Enabled=0
-[DriverProfiling]
-Enabled=0
-Mode=3
-Graph=0
-Symbiont=0

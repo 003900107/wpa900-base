@@ -42,6 +42,7 @@ void SysTick_Handler(void);
 void ADC1_2_IRQHandler(void);
 void CAN1_RX0_IRQHandler(void);
 void CAN2_RX0_IRQHandler(void);
+void TIM2_IRQHandler(void);
 					 
 #endif /* __STM32F10x_IT_H */
 
